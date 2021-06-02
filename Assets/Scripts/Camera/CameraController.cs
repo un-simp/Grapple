@@ -1,16 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using Mirror;
+using Wildflare.Player.Movement;
+using DG.Tweening;
 
-namespace Wildflare.Player
+namespace Wildflare.Player.Cam
 {
-    public class CameraController : NetworkBehaviour
+    public class CameraController : MonoBehaviour
     {
-        public Vector2 sensitivity;
+        [SerializeField]private Vector2 sensitivity;
+        [SerializeField]private Camera playerCam;
         private PlayerMovement movement;
-        public Camera playerCam;
-
         public Transform orientation;
 
         float desiredX;
@@ -20,22 +19,22 @@ namespace Wildflare.Player
 
         float mouseX, mouseY;
 
+        private float targetRot;
+        [Range(0.0001f, 10f)][SerializeField] private float damper;
+
         void Awake()
         {
             movement = GetComponent<PlayerMovement>();
         }
 
-        public override void OnStartLocalPlayer()
+        public void Start()
         {
-            if(hasAuthority){
-                Cursor.lockState = CursorLockMode.Locked;
-                cursorLocked = true;
-            }
+            Cursor.lockState = CursorLockMode.Locked;
+            cursorLocked = true;
         }
 
         void Update(){
             if(!movement.isActive) return;
-            if(!hasAuthority) return;
 
             mouseX = Input.GetAxis("Mouse X") * sensitivity.x * Time.deltaTime;
             mouseY = Input.GetAxis("Mouse Y") * sensitivity.y * Time.deltaTime;
@@ -43,7 +42,6 @@ namespace Wildflare.Player
 
         void LateUpdate(){
             if(!movement.isActive) return;
-            if(!hasAuthority) return;
 
             //Find current look rotation
             Vector3 rot = playerCam.transform.localRotation.eulerAngles;
@@ -54,7 +52,7 @@ namespace Wildflare.Player
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             //Perform the rotations
-            playerCam.transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0);
+            playerCam.transform.localRotation = Quaternion.Euler(xRotation, desiredX, targetRot);
             orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0);
 
             if(Input.GetKeyDown(KeyCode.Escape)){
@@ -67,9 +65,12 @@ namespace Wildflare.Player
                     Cursor.lockState = CursorLockMode.None;
                 }
             }
-            
         }
 
-    } 
+        public void TweenTargetRot(float _endRot) {
+            DOTween.To(() => targetRot, x => targetRot = x, _endRot, damper).SetEase(Ease.OutExpo);
+        }
+
+    }
 }
 

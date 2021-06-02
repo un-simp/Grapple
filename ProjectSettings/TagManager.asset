@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Tip
+  - Volume
+  - Recorder
   layers:
   - Default
   - TransparentFX
@@ -16,9 +18,9 @@ TagManager:
   - Ground
   - SecondCam
   - Swingable
-  - 
-  - 
-  - 
+  - Volume
+  - Wallrunnable
+  - Player
   - 
   - 
   - 

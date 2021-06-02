@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mirror;
 using Steamworks;
@@ -19,17 +20,19 @@ namespace Wildflare.Networking.Steamworks
         private const string hostAddressKey = "HostAddress";
 
         public static CSteamID lobbyID {get; private set;}
+        
 
-        void Start()
-        {
-            networkManager = GetComponent<NetworkManager>();
-
+        void Start() {
+            
             if(!SteamManager.Initialized) return;
+
+            networkManager = GetComponent<NetworkManager>();
 
             lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
             gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
             lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         }
+
 
         public void HostLobby()
         {
@@ -55,23 +58,27 @@ namespace Wildflare.Networking.Steamworks
 
         private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback) {
             //Potentially will work Idk...;
+            /*
+            if (networkManager.isNetworkActive) {
+                SteamMatchmaking.LeaveLobby(lobbyID);
+                lobbyID = CSteamID.Nil;
+            }
+            */
             SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
         }
 
         private void OnLobbyEntered(LobbyEnter_t callback)
         {
             if(NetworkServer.active) return;
+            
+            buttons.SetActive(false);
+            loading.SetActive(true);
+            StartCoroutine(AnimateLoading());
 
             string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), hostAddressKey);
 
             networkManager.networkAddress = hostAddress;
             networkManager.StartClient();
-
-            buttons.SetActive(false);
-
-            loading.SetActive(true);
-
-            StartCoroutine(AnimateLoading());
         }
 
         IEnumerator AnimateLoading()

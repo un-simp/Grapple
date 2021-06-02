@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 using Mirror;
 using Wildflare.Player.Combat;
+using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Graphics
 {
-    [RequireComponent(typeof(Grapple))]
-    public class GrappleGraphics : NetworkBehaviour
+    public class GrappleGraphics : MonoBehaviour
     {
         private Grapple grapple;
         private PlayerMovement movement;
@@ -20,7 +19,6 @@ namespace Wildflare.Player.Graphics
         [SerializeField]private Transform spearOrientation;
         [SerializeField]private GameObject spearHitParticles;
         [SerializeField]private Material spearHitParticlesMat;
-        [SerializeField] private Animator anim;
 
         private Transform transformOnStart;
 
@@ -37,7 +35,6 @@ namespace Wildflare.Player.Graphics
         public float waveHeight;
         public AnimationCurve affectCurve;
         private Spring spring;
-        public Animator spearAnim;
 
 
         private Vector3 grapplePoint;
@@ -77,14 +74,13 @@ namespace Wildflare.Player.Graphics
 
             crosshairScaleOnStart = crosshair.transform.localScale;
         }
-
-        [Client]
+        
         void Update()
         {   
             DrawRope();
             AlterSpeedlineOpacity();
 
-            if(!hasAuthority || !grapple.getisActiveWeapon) return;
+            if(!grapple.getisActiveWeapon) return;
 
             UpdateSpring();
         }
@@ -93,18 +89,14 @@ namespace Wildflare.Player.Graphics
         public void StartGrapple(RaycastHit _hitInfo)
         {
             hook.parent = movement.cam.transform.parent;
-            CmdUpdateHookParent(false);
 
             lineEnd.parent = movement.cam.transform.parent;
-            CmdUpdateLineEndParent(false);
 
             sway.enabled = false;
-            spearAnim.enabled = false;  
 
             lineEndTarget = _hitInfo.point;
             inverseHitNormal = (_hitInfo.point - movement.transform.position).normalized;
             ChangeHookRenderLayer(0);
-            CmdUpdateLinePosition(_hitInfo.point); 
         }
 
         public void DrawRope()
@@ -151,17 +143,12 @@ namespace Wildflare.Player.Graphics
         public void StopGrapple()
         {
             lineEndTarget = hookStart.position;
-            CmdUpdateLinePosition(hookStart.position);  
 
             hook.parent = movement.cam.transform;
-            CmdUpdateHookParent(true);
             lineEnd.parent = movement.cam.transform;
-            CmdUpdateLineEndParent(true); 
 
             ChangeHookRenderLayer(8);
             LineDismantle();
-            
-            anim.StartPlayback();
         }
 
         void UpdateSpring()
@@ -184,9 +171,7 @@ namespace Wildflare.Player.Graphics
         public void LineDismantle()
         {
             hook.localRotation = spearOrientation.localRotation;
-            CmdUpdateSpearOrientation();
             sway.enabled = true;
-            spearAnim.enabled = true;
             inverseHitNormal = Vector3.zero;
         }
 
@@ -208,37 +193,6 @@ namespace Wildflare.Player.Graphics
 
             //lr.gameObject.layer = _layer;
         }
-        
-        public void AnimateIn() {
-            //anim.StopPlayback();
-            //anim.Rebind();
-            //anim.Update(0f);
-            anim.SetTrigger("Reset");
-        }
 
-        #region Remote Calls
-        [Command] void CmdUpdateLineEndParent(bool camIsParent) => RpcUpdateLineEndParent(camIsParent);
-        [ClientRpc(includeOwner=false)] void RpcUpdateLineEndParent(bool camIsParent)
-        {
-            if(camIsParent) lineEnd.parent = movement.cam.transform;
-            else lineEnd.parent = movement.cam.transform.parent;
-        }
-
-        [Command] void CmdUpdateHookParent(bool camIsParent) => RpcUpdateHookParent(camIsParent);
-        [ClientRpc(includeOwner=false)] void RpcUpdateHookParent(bool camIsParent)
-        {
-            if(camIsParent) lineEnd.parent = movement.cam.transform;
-            else lineEnd.parent = movement.cam.transform.parent;
-        }
-
-        [Command] void CmdUpdateLinePosition(Vector3 newPos) => RpcUpdateLinePosition(newPos);
-        [ClientRpc(includeOwner = false)] void RpcUpdateLinePosition(Vector3 newPos){
-            lineEndTarget = newPos;
-            inverseHitNormal = (newPos - movement.transform.position).normalized;
-        }
-
-        [Command] void CmdUpdateSpearOrientation() => RpcUpdateSpearOrientation();
-        [ClientRpc(includeOwner=false)] void RpcUpdateSpearOrientation() => hook.localRotation = spearOrientation.localRotation;
-        #endregion
     }
 }

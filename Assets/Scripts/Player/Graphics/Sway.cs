@@ -32,7 +32,7 @@ namespace Wildflare.Player.Graphics{
             //Calculate Target Rotation
             Quaternion adjustmentX = Quaternion.AngleAxis(intensity * -mouseX, Vector3.up);
             Quaternion adjustmentY = Quaternion.AngleAxis(intensity * mouseY, Vector3.right);
-            Quaternion targetRot = originRot * adjustmentX * adjustmentY;
+            Quaternion targetRot = originRot * adjustmentX * adjustmentY ;
 
             //Rotates toward target rotation
             transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * damper);

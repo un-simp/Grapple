@@ -12,8 +12,9 @@ public class AuthorityCleanup : NetworkBehaviour
     public GameObject nametag;
 
     public static List<GameObject> nametags = new List<GameObject>();
+    
 
-    public void Start()
+    public override void OnStartClient()
     {
         if(hasAuthority){
             nametag.SetActive(false);

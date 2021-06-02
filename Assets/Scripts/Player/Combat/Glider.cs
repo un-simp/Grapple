@@ -1,9 +1,9 @@
 using UnityEngine;
 using DG.Tweening;
+using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Combat
 {
-    [RequireComponent(typeof(PlayerMovement))]
     public class Glider : MonoBehaviour
     {
         private PlayerMovement movement;
@@ -20,8 +20,6 @@ namespace Wildflare.Player.Combat
         [SerializeField]private Transform glider;
 
         private Rigidbody rb;
-
-        public Animator spearAnim;
         private static readonly int DoDown = Animator.StringToHash("doDown");
 
         void Awake()
@@ -90,8 +88,7 @@ namespace Wildflare.Player.Combat
             movement.canMove = false;
             glider.gameObject.SetActive(true);
             glider.DOLocalMove(gliderStartPos, 0.3f);
-            glider.DOLocalRotate(gliderStartRot, 0.4f); 
-            spearAnim.SetBool(DoDown, true);
+            glider.DOLocalRotate(gliderStartRot, 0.4f);
         }
 
         void DoGliding()
@@ -106,7 +103,6 @@ namespace Wildflare.Player.Combat
             movement.canMove = true; 
             glider.DOLocalMove(gliderStartPos + gliderOffset, 0.3f);
             glider.DOLocalRotate(new Vector3(gliderStartRot.x, gliderStartRot.y, -90), 0.4f);
-            spearAnim.SetBool("doDown", false);
         }
 
         void GliderTimer(){

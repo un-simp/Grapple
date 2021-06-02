@@ -1,13 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using Wildflare.Player.Graphics;
-using Mirror;
+using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Combat
 {
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(GrappleGraphics))]
-    public class Grapple : NetworkBehaviour
+    public class Grapple : MonoBehaviour
     {
         private PlayerMovement movement;   
         private Glider glider;
@@ -50,11 +50,10 @@ namespace Wildflare.Player.Combat
             graphics = GetComponent<GrappleGraphics>();
             rb = GetComponent<Rigidbody>();
         }
-
-        [Client]
+        
         void Update()
         {   
-            if(!hasAuthority || !isActiveWeapon) return;
+            if(!isActiveWeapon) return;
             if (!canGrapple) return;
             
             GrappleManager();
@@ -65,7 +64,6 @@ namespace Wildflare.Player.Combat
 
         void FixedUpdate()
         {
-            if(!isClient || !hasAuthority) return;
             if (!canGrapple) return;
 
             if(isGrappling || !isActiveWeapon){
@@ -86,14 +84,13 @@ namespace Wildflare.Player.Combat
         void InstantStart()
         {
             StartGrapple();
+            movement.wallNormal = Vector3.zero;
             isGrappling = true;
-            CmdSetIsGrappling(true);
         }
         public void InstantStop()
         {
             StopGrapple();
             isGrappling = false;
-            CmdSetIsGrappling(false);
         }
 
         void StartGrapple()
@@ -154,29 +151,18 @@ namespace Wildflare.Player.Combat
 
         public void OnSelect(){
             getisActiveWeapon = true;
-            CmdSetIsActiveWeapon(true);
             StartCoroutine(CanGrappleDelay());
         }
 
-        IEnumerator CanGrappleDelay() {
+        IEnumerator CanGrappleDelay() 
+        {
             yield return new WaitForSeconds(0.55f);
             canGrapple = true;
         }
         public void OnDeselect() {
             canGrapple = false;
             getisActiveWeapon = false;
-            CmdSetIsActiveWeapon(true);
             InstantStop();
-            CmdCallGrappleStop();
         }
-
-        [Command] void CmdSetIsActiveWeapon(bool _state) => RpcSetIsActiveWeapon(_state);
-        [ClientRpc(includeOwner=false)] void RpcSetIsActiveWeapon(bool _state) => getisActiveWeapon = _state;
-
-        [Command] void CmdCallGrappleStop() => RpcCallGrappleStop();
-        [ClientRpc(includeOwner=false)] void RpcCallGrappleStop() => InstantStop();
-        
-        [Command]void CmdSetIsGrappling(bool _isGrappling) => RpcSetIsGrappling(_isGrappling);
-        [ClientRpc(includeOwner=false)] void RpcSetIsGrappling(bool _isGrappling) => isGrappling = _isGrappling;
     }
 }

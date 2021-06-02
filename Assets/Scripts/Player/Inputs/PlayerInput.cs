@@ -1,12 +1,9 @@
 using UnityEngine;
-using System.Collections;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Mirror;
+using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Inputs
 {
-    [RequireComponent(typeof(PlayerMovement))]
     public class PlayerInput : MonoBehaviour
     {
         [HideInInspector]public float xInput, yInput;
@@ -22,7 +19,6 @@ namespace Wildflare.Player.Inputs
 
         void Update()
         {
-            if(!movement.hasAuthority) return;
             InputsHandler();
         }
 
