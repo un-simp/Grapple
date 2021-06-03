@@ -11,54 +11,65 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct SteamLeaderboard_t : System.IEquatable<SteamLeaderboard_t>, System.IComparable<SteamLeaderboard_t> {
-		public ulong m_SteamLeaderboard;
+namespace Steamworks
+{
+    [Serializable]
+    public struct SteamLeaderboard_t : IEquatable<SteamLeaderboard_t>, IComparable<SteamLeaderboard_t>
+    {
+        public ulong m_SteamLeaderboard;
 
-		public SteamLeaderboard_t(ulong value) {
-			m_SteamLeaderboard = value;
-		}
+        public SteamLeaderboard_t(ulong value)
+        {
+            m_SteamLeaderboard = value;
+        }
 
-		public override string ToString() {
-			return m_SteamLeaderboard.ToString();
-		}
+        public int CompareTo(SteamLeaderboard_t other)
+        {
+            return m_SteamLeaderboard.CompareTo(other.m_SteamLeaderboard);
+        }
 
-		public override bool Equals(object other) {
-			return other is SteamLeaderboard_t && this == (SteamLeaderboard_t)other;
-		}
+        public bool Equals(SteamLeaderboard_t other)
+        {
+            return m_SteamLeaderboard == other.m_SteamLeaderboard;
+        }
 
-		public override int GetHashCode() {
-			return m_SteamLeaderboard.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_SteamLeaderboard.ToString();
+        }
 
-		public static bool operator ==(SteamLeaderboard_t x, SteamLeaderboard_t y) {
-			return x.m_SteamLeaderboard == y.m_SteamLeaderboard;
-		}
+        public override bool Equals(object other)
+        {
+            return other is SteamLeaderboard_t && this == (SteamLeaderboard_t) other;
+        }
 
-		public static bool operator !=(SteamLeaderboard_t x, SteamLeaderboard_t y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_SteamLeaderboard.GetHashCode();
+        }
 
-		public static explicit operator SteamLeaderboard_t(ulong value) {
-			return new SteamLeaderboard_t(value);
-		}
+        public static bool operator ==(SteamLeaderboard_t x, SteamLeaderboard_t y)
+        {
+            return x.m_SteamLeaderboard == y.m_SteamLeaderboard;
+        }
 
-		public static explicit operator ulong(SteamLeaderboard_t that) {
-			return that.m_SteamLeaderboard;
-		}
+        public static bool operator !=(SteamLeaderboard_t x, SteamLeaderboard_t y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(SteamLeaderboard_t other) {
-			return m_SteamLeaderboard == other.m_SteamLeaderboard;
-		}
+        public static explicit operator SteamLeaderboard_t(ulong value)
+        {
+            return new SteamLeaderboard_t(value);
+        }
 
-		public int CompareTo(SteamLeaderboard_t other) {
-			return m_SteamLeaderboard.CompareTo(other.m_SteamLeaderboard);
-		}
-	}
+        public static explicit operator ulong(SteamLeaderboard_t that)
+        {
+            return that.m_SteamLeaderboard;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

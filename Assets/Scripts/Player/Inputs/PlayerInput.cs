@@ -1,23 +1,22 @@
 using UnityEngine;
-using Mirror;
 using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Inputs
 {
     public class PlayerInput : MonoBehaviour
     {
-        [HideInInspector]public float xInput, yInput;
-        [HideInInspector]public float mouseX, mouseY;
+        [HideInInspector] public float xInput, yInput;
+        [HideInInspector] public float mouseX, mouseY;
 
-        [HideInInspector]public bool jumping;
-        PlayerMovement movement;
+        [HideInInspector] public bool jumping;
+        private PlayerMovement movement;
 
-        void Awake()
+        private void Awake()
         {
             movement = GetComponent<PlayerMovement>();
         }
 
-        void Update()
+        private void Update()
         {
             InputsHandler();
         }
@@ -31,6 +30,15 @@ namespace Wildflare.Player.Inputs
             mouseY = Input.GetAxisRaw("Mouse Y");
 
             jumping = Input.GetButton("Jump");
+
+            if (xInput == 0 && yInput == 0)
+            {
+                movement.isMoving = false;
+            }
+            else
+            {
+                movement.isMoving = true;
+            }
         }
     }
 }

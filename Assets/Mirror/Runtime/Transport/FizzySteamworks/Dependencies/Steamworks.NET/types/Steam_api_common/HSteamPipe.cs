@@ -11,54 +11,65 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct HSteamPipe : System.IEquatable<HSteamPipe>, System.IComparable<HSteamPipe> {
-		public int m_HSteamPipe;
+namespace Steamworks
+{
+    [Serializable]
+    public struct HSteamPipe : IEquatable<HSteamPipe>, IComparable<HSteamPipe>
+    {
+        public int m_HSteamPipe;
 
-		public HSteamPipe(int value) {
-			m_HSteamPipe = value;
-		}
+        public HSteamPipe(int value)
+        {
+            m_HSteamPipe = value;
+        }
 
-		public override string ToString() {
-			return m_HSteamPipe.ToString();
-		}
+        public int CompareTo(HSteamPipe other)
+        {
+            return m_HSteamPipe.CompareTo(other.m_HSteamPipe);
+        }
 
-		public override bool Equals(object other) {
-			return other is HSteamPipe && this == (HSteamPipe)other;
-		}
+        public bool Equals(HSteamPipe other)
+        {
+            return m_HSteamPipe == other.m_HSteamPipe;
+        }
 
-		public override int GetHashCode() {
-			return m_HSteamPipe.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_HSteamPipe.ToString();
+        }
 
-		public static bool operator ==(HSteamPipe x, HSteamPipe y) {
-			return x.m_HSteamPipe == y.m_HSteamPipe;
-		}
+        public override bool Equals(object other)
+        {
+            return other is HSteamPipe && this == (HSteamPipe) other;
+        }
 
-		public static bool operator !=(HSteamPipe x, HSteamPipe y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_HSteamPipe.GetHashCode();
+        }
 
-		public static explicit operator HSteamPipe(int value) {
-			return new HSteamPipe(value);
-		}
+        public static bool operator ==(HSteamPipe x, HSteamPipe y)
+        {
+            return x.m_HSteamPipe == y.m_HSteamPipe;
+        }
 
-		public static explicit operator int(HSteamPipe that) {
-			return that.m_HSteamPipe;
-		}
+        public static bool operator !=(HSteamPipe x, HSteamPipe y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(HSteamPipe other) {
-			return m_HSteamPipe == other.m_HSteamPipe;
-		}
+        public static explicit operator HSteamPipe(int value)
+        {
+            return new HSteamPipe(value);
+        }
 
-		public int CompareTo(HSteamPipe other) {
-			return m_HSteamPipe.CompareTo(other.m_HSteamPipe);
-		}
-	}
+        public static explicit operator int(HSteamPipe that)
+        {
+            return that.m_HSteamPipe;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

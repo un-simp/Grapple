@@ -11,54 +11,65 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct HSteamUser : System.IEquatable<HSteamUser>, System.IComparable<HSteamUser> {
-		public int m_HSteamUser;
+namespace Steamworks
+{
+    [Serializable]
+    public struct HSteamUser : IEquatable<HSteamUser>, IComparable<HSteamUser>
+    {
+        public int m_HSteamUser;
 
-		public HSteamUser(int value) {
-			m_HSteamUser = value;
-		}
+        public HSteamUser(int value)
+        {
+            m_HSteamUser = value;
+        }
 
-		public override string ToString() {
-			return m_HSteamUser.ToString();
-		}
+        public int CompareTo(HSteamUser other)
+        {
+            return m_HSteamUser.CompareTo(other.m_HSteamUser);
+        }
 
-		public override bool Equals(object other) {
-			return other is HSteamUser && this == (HSteamUser)other;
-		}
+        public bool Equals(HSteamUser other)
+        {
+            return m_HSteamUser == other.m_HSteamUser;
+        }
 
-		public override int GetHashCode() {
-			return m_HSteamUser.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_HSteamUser.ToString();
+        }
 
-		public static bool operator ==(HSteamUser x, HSteamUser y) {
-			return x.m_HSteamUser == y.m_HSteamUser;
-		}
+        public override bool Equals(object other)
+        {
+            return other is HSteamUser && this == (HSteamUser) other;
+        }
 
-		public static bool operator !=(HSteamUser x, HSteamUser y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_HSteamUser.GetHashCode();
+        }
 
-		public static explicit operator HSteamUser(int value) {
-			return new HSteamUser(value);
-		}
+        public static bool operator ==(HSteamUser x, HSteamUser y)
+        {
+            return x.m_HSteamUser == y.m_HSteamUser;
+        }
 
-		public static explicit operator int(HSteamUser that) {
-			return that.m_HSteamUser;
-		}
+        public static bool operator !=(HSteamUser x, HSteamUser y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(HSteamUser other) {
-			return m_HSteamUser == other.m_HSteamUser;
-		}
+        public static explicit operator HSteamUser(int value)
+        {
+            return new HSteamUser(value);
+        }
 
-		public int CompareTo(HSteamUser other) {
-			return m_HSteamUser.CompareTo(other.m_HSteamUser);
-		}
-	}
+        public static explicit operator int(HSteamUser that)
+        {
+            return that.m_HSteamUser;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

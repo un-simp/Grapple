@@ -11,55 +11,66 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct HTTPRequestHandle : System.IEquatable<HTTPRequestHandle>, System.IComparable<HTTPRequestHandle> {
-		public static readonly HTTPRequestHandle Invalid = new HTTPRequestHandle(0);
-		public uint m_HTTPRequestHandle;
+namespace Steamworks
+{
+    [Serializable]
+    public struct HTTPRequestHandle : IEquatable<HTTPRequestHandle>, IComparable<HTTPRequestHandle>
+    {
+        public static readonly HTTPRequestHandle Invalid = new HTTPRequestHandle(0);
+        public uint m_HTTPRequestHandle;
 
-		public HTTPRequestHandle(uint value) {
-			m_HTTPRequestHandle = value;
-		}
+        public HTTPRequestHandle(uint value)
+        {
+            m_HTTPRequestHandle = value;
+        }
 
-		public override string ToString() {
-			return m_HTTPRequestHandle.ToString();
-		}
+        public int CompareTo(HTTPRequestHandle other)
+        {
+            return m_HTTPRequestHandle.CompareTo(other.m_HTTPRequestHandle);
+        }
 
-		public override bool Equals(object other) {
-			return other is HTTPRequestHandle && this == (HTTPRequestHandle)other;
-		}
+        public bool Equals(HTTPRequestHandle other)
+        {
+            return m_HTTPRequestHandle == other.m_HTTPRequestHandle;
+        }
 
-		public override int GetHashCode() {
-			return m_HTTPRequestHandle.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_HTTPRequestHandle.ToString();
+        }
 
-		public static bool operator ==(HTTPRequestHandle x, HTTPRequestHandle y) {
-			return x.m_HTTPRequestHandle == y.m_HTTPRequestHandle;
-		}
+        public override bool Equals(object other)
+        {
+            return other is HTTPRequestHandle && this == (HTTPRequestHandle) other;
+        }
 
-		public static bool operator !=(HTTPRequestHandle x, HTTPRequestHandle y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_HTTPRequestHandle.GetHashCode();
+        }
 
-		public static explicit operator HTTPRequestHandle(uint value) {
-			return new HTTPRequestHandle(value);
-		}
+        public static bool operator ==(HTTPRequestHandle x, HTTPRequestHandle y)
+        {
+            return x.m_HTTPRequestHandle == y.m_HTTPRequestHandle;
+        }
 
-		public static explicit operator uint(HTTPRequestHandle that) {
-			return that.m_HTTPRequestHandle;
-		}
+        public static bool operator !=(HTTPRequestHandle x, HTTPRequestHandle y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(HTTPRequestHandle other) {
-			return m_HTTPRequestHandle == other.m_HTTPRequestHandle;
-		}
+        public static explicit operator HTTPRequestHandle(uint value)
+        {
+            return new HTTPRequestHandle(value);
+        }
 
-		public int CompareTo(HTTPRequestHandle other) {
-			return m_HTTPRequestHandle.CompareTo(other.m_HTTPRequestHandle);
-		}
-	}
+        public static explicit operator uint(HTTPRequestHandle that)
+        {
+            return that.m_HTTPRequestHandle;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

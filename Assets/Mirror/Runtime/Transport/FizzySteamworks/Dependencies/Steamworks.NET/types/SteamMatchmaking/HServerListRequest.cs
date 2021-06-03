@@ -11,51 +11,61 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct HServerListRequest : System.IEquatable<HServerListRequest> {
-		public static readonly HServerListRequest Invalid = new HServerListRequest(System.IntPtr.Zero);
-		public System.IntPtr m_HServerListRequest;
+namespace Steamworks
+{
+    [Serializable]
+    public struct HServerListRequest : IEquatable<HServerListRequest>
+    {
+        public static readonly HServerListRequest Invalid = new HServerListRequest(IntPtr.Zero);
+        public IntPtr m_HServerListRequest;
 
-		public HServerListRequest(System.IntPtr value) {
-			m_HServerListRequest = value;
-		}
+        public HServerListRequest(IntPtr value)
+        {
+            m_HServerListRequest = value;
+        }
 
-		public override string ToString() {
-			return m_HServerListRequest.ToString();
-		}
+        public bool Equals(HServerListRequest other)
+        {
+            return m_HServerListRequest == other.m_HServerListRequest;
+        }
 
-		public override bool Equals(object other) {
-			return other is HServerListRequest && this == (HServerListRequest)other;
-		}
+        public override string ToString()
+        {
+            return m_HServerListRequest.ToString();
+        }
 
-		public override int GetHashCode() {
-			return m_HServerListRequest.GetHashCode();
-		}
+        public override bool Equals(object other)
+        {
+            return other is HServerListRequest && this == (HServerListRequest) other;
+        }
 
-		public static bool operator ==(HServerListRequest x, HServerListRequest y) {
-			return x.m_HServerListRequest == y.m_HServerListRequest;
-		}
+        public override int GetHashCode()
+        {
+            return m_HServerListRequest.GetHashCode();
+        }
 
-		public static bool operator !=(HServerListRequest x, HServerListRequest y) {
-			return !(x == y);
-		}
+        public static bool operator ==(HServerListRequest x, HServerListRequest y)
+        {
+            return x.m_HServerListRequest == y.m_HServerListRequest;
+        }
 
-		public static explicit operator HServerListRequest(System.IntPtr value) {
-			return new HServerListRequest(value);
-		}
+        public static bool operator !=(HServerListRequest x, HServerListRequest y)
+        {
+            return !(x == y);
+        }
 
-		public static explicit operator System.IntPtr(HServerListRequest that) {
-			return that.m_HServerListRequest;
-		}
+        public static explicit operator HServerListRequest(IntPtr value)
+        {
+            return new HServerListRequest(value);
+        }
 
-		public bool Equals(HServerListRequest other) {
-			return m_HServerListRequest == other.m_HServerListRequest;
-		}
-	}
+        public static explicit operator IntPtr(HServerListRequest that)
+        {
+            return that.m_HServerListRequest;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

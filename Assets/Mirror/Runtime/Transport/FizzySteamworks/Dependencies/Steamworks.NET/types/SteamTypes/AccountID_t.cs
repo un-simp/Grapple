@@ -11,54 +11,65 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct AccountID_t : System.IEquatable<AccountID_t>, System.IComparable<AccountID_t> {
-		public uint m_AccountID;
+namespace Steamworks
+{
+    [Serializable]
+    public struct AccountID_t : IEquatable<AccountID_t>, IComparable<AccountID_t>
+    {
+        public uint m_AccountID;
 
-		public AccountID_t(uint value) {
-			m_AccountID = value;
-		}
+        public AccountID_t(uint value)
+        {
+            m_AccountID = value;
+        }
 
-		public override string ToString() {
-			return m_AccountID.ToString();
-		}
+        public int CompareTo(AccountID_t other)
+        {
+            return m_AccountID.CompareTo(other.m_AccountID);
+        }
 
-		public override bool Equals(object other) {
-			return other is AccountID_t && this == (AccountID_t)other;
-		}
+        public bool Equals(AccountID_t other)
+        {
+            return m_AccountID == other.m_AccountID;
+        }
 
-		public override int GetHashCode() {
-			return m_AccountID.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_AccountID.ToString();
+        }
 
-		public static bool operator ==(AccountID_t x, AccountID_t y) {
-			return x.m_AccountID == y.m_AccountID;
-		}
+        public override bool Equals(object other)
+        {
+            return other is AccountID_t && this == (AccountID_t) other;
+        }
 
-		public static bool operator !=(AccountID_t x, AccountID_t y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_AccountID.GetHashCode();
+        }
 
-		public static explicit operator AccountID_t(uint value) {
-			return new AccountID_t(value);
-		}
+        public static bool operator ==(AccountID_t x, AccountID_t y)
+        {
+            return x.m_AccountID == y.m_AccountID;
+        }
 
-		public static explicit operator uint(AccountID_t that) {
-			return that.m_AccountID;
-		}
+        public static bool operator !=(AccountID_t x, AccountID_t y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(AccountID_t other) {
-			return m_AccountID == other.m_AccountID;
-		}
+        public static explicit operator AccountID_t(uint value)
+        {
+            return new AccountID_t(value);
+        }
 
-		public int CompareTo(AccountID_t other) {
-			return m_AccountID.CompareTo(other.m_AccountID);
-		}
-	}
+        public static explicit operator uint(AccountID_t that)
+        {
+            return that.m_AccountID;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

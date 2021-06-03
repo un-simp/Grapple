@@ -9,17 +9,20 @@ namespace Wildflare.Player.Combat.Net
         public GrappleNet grapple;
         public GrappleGraphicsNet grappleGraphics;
 
-        public void OnSelect(){
+        public void OnSelect()
+        {
             gameObject.SetActive(true);
             grapple.OnSelect();
         }
-        public void OnDeselect(){
+
+        public void OnDeselect()
+        {
             grapple.OnDeselect();
         }
-        
-        public void AnimateIn() {
+
+        public void AnimateIn()
+        {
             grappleGraphics.AnimateIn();
         }
     }
 }
-

@@ -1,28 +1,33 @@
-﻿using System;
+﻿using DG.Tweening;
 using UnityEngine;
 using Wildflare.Player.Movement;
-using DG.Tweening;
+using MilkShake;
 
 namespace Wildflare.Player.Cam
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField]private Vector2 sensitivity;
-        [SerializeField]private Camera playerCam;
+        [SerializeField] private Vector2 sensitivity;
+        [SerializeField] private Transform playerCamParent;
+        [SerializeField] private ShakePreset groundImpact;
+        [SerializeField] private Camera cam;
         private PlayerMovement movement;
         public Transform orientation;
-
-        float desiredX;
-        float xRotation;
-
-        bool cursorLocked;
-
-        float mouseX, mouseY;
-
+        
+        [Range(0.0001f, 10f)] [SerializeField] private float wallrunDamper;
+        private float desiredX;
+        private float xRotation;
+        private float mouseX, mouseY;
+        private bool cursorLocked;
         private float targetRot;
-        [Range(0.0001f, 10f)][SerializeField] private float damper;
+        
+        [Header("Impact Settings")]
+        [Range(0.0001f, 10f)][SerializeField] private float fallSmoothing;
+        [Range(0.0001f, 10f)][SerializeField] private float impactSmoothing;
+        [Range(-0.0001f, -1f)][SerializeField] private float maximumOffset;
+        private float currentOffset;
 
-        void Awake()
+        private void Awake()
         {
             movement = GetComponent<PlayerMovement>();
         }
@@ -33,44 +38,78 @@ namespace Wildflare.Player.Cam
             cursorLocked = true;
         }
 
-        void Update(){
-            if(!movement.isActive) return;
+        private void Update()
+        {
 
             mouseX = Input.GetAxis("Mouse X") * sensitivity.x * Time.deltaTime;
             mouseY = Input.GetAxis("Mouse Y") * sensitivity.y * Time.deltaTime;
         }
 
-        void LateUpdate(){
-            if(!movement.isActive) return;
+        private void LateUpdate()
+        {
 
+            Rotation();
+            CursorManager();
+            CameraFall();
+        }
+
+        private void Rotation()
+        {
             //Find current look rotation
-            Vector3 rot = playerCam.transform.localRotation.eulerAngles;
+            var rot = playerCamParent.localRotation.eulerAngles;
             desiredX = rot.y + mouseX;
-            
+
             //Rotate, and also make sure we dont over- or under-rotate.
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            xRotation = Mathf.Clamp(xRotation, -88f, 88f);
 
             //Perform the rotations
-            playerCam.transform.localRotation = Quaternion.Euler(xRotation, desiredX, targetRot);
+            playerCamParent.localRotation = Quaternion.Euler(xRotation, desiredX, targetRot);
             orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0);
+        }
 
-            if(Input.GetKeyDown(KeyCode.Escape)){
+        private void CursorManager()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
                 cursorLocked = !cursorLocked;
-                if(cursorLocked){
+                if (cursorLocked)
                     Cursor.lockState = CursorLockMode.Locked;
-                }
                 else
-                {
                     Cursor.lockState = CursorLockMode.None;
-                }
             }
         }
 
-        public void TweenTargetRot(float _endRot) {
-            DOTween.To(() => targetRot, x => targetRot = x, _endRot, damper).SetEase(Ease.OutExpo);
+        private void CameraFall()
+        {
+            if(movement.currentState == PlayerMovement.state.Airborn)
+            {
+                // > as the offset is negative
+                if (cam.transform.localPosition.y > maximumOffset)
+                {
+                    currentOffset = Mathf.Lerp(currentOffset, maximumOffset, Time.deltaTime * (1 / fallSmoothing));
+                }
+            }
+            else
+            {
+                currentOffset = Mathf.Lerp(currentOffset, 0, Time.deltaTime * (1 / impactSmoothing));
+            }
+
+            Vector3 camPos = cam.transform.localPosition;
+            camPos = new Vector3(camPos.x, currentOffset, camPos.z);
+            cam.transform.localPosition = camPos;
         }
 
+
+
+        public void ShakeGroundImpact()
+        {
+            //Shaker.ShakeAll(groundImpact);
+        }
+
+        public void TweenTargetRot(float _endRot)
+        {
+            DOTween.To(() => targetRot, x => targetRot = x, _endRot, wallrunDamper).SetEase(Ease.OutExpo);
+        }
     }
 }
-

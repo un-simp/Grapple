@@ -11,54 +11,66 @@
 
 #if !DISABLESTEAMWORKS
 
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
+using System;
 
-namespace Steamworks {
-	[System.Serializable]
-	public struct InputAnalogActionHandle_t : System.IEquatable<InputAnalogActionHandle_t>, System.IComparable<InputAnalogActionHandle_t> {
-		public ulong m_InputAnalogActionHandle;
+namespace Steamworks
+{
+    [Serializable]
+    public struct InputAnalogActionHandle_t : IEquatable<InputAnalogActionHandle_t>,
+        IComparable<InputAnalogActionHandle_t>
+    {
+        public ulong m_InputAnalogActionHandle;
 
-		public InputAnalogActionHandle_t(ulong value) {
-			m_InputAnalogActionHandle = value;
-		}
+        public InputAnalogActionHandle_t(ulong value)
+        {
+            m_InputAnalogActionHandle = value;
+        }
 
-		public override string ToString() {
-			return m_InputAnalogActionHandle.ToString();
-		}
+        public int CompareTo(InputAnalogActionHandle_t other)
+        {
+            return m_InputAnalogActionHandle.CompareTo(other.m_InputAnalogActionHandle);
+        }
 
-		public override bool Equals(object other) {
-			return other is InputAnalogActionHandle_t && this == (InputAnalogActionHandle_t)other;
-		}
+        public bool Equals(InputAnalogActionHandle_t other)
+        {
+            return m_InputAnalogActionHandle == other.m_InputAnalogActionHandle;
+        }
 
-		public override int GetHashCode() {
-			return m_InputAnalogActionHandle.GetHashCode();
-		}
+        public override string ToString()
+        {
+            return m_InputAnalogActionHandle.ToString();
+        }
 
-		public static bool operator ==(InputAnalogActionHandle_t x, InputAnalogActionHandle_t y) {
-			return x.m_InputAnalogActionHandle == y.m_InputAnalogActionHandle;
-		}
+        public override bool Equals(object other)
+        {
+            return other is InputAnalogActionHandle_t && this == (InputAnalogActionHandle_t) other;
+        }
 
-		public static bool operator !=(InputAnalogActionHandle_t x, InputAnalogActionHandle_t y) {
-			return !(x == y);
-		}
+        public override int GetHashCode()
+        {
+            return m_InputAnalogActionHandle.GetHashCode();
+        }
 
-		public static explicit operator InputAnalogActionHandle_t(ulong value) {
-			return new InputAnalogActionHandle_t(value);
-		}
+        public static bool operator ==(InputAnalogActionHandle_t x, InputAnalogActionHandle_t y)
+        {
+            return x.m_InputAnalogActionHandle == y.m_InputAnalogActionHandle;
+        }
 
-		public static explicit operator ulong(InputAnalogActionHandle_t that) {
-			return that.m_InputAnalogActionHandle;
-		}
+        public static bool operator !=(InputAnalogActionHandle_t x, InputAnalogActionHandle_t y)
+        {
+            return !(x == y);
+        }
 
-		public bool Equals(InputAnalogActionHandle_t other) {
-			return m_InputAnalogActionHandle == other.m_InputAnalogActionHandle;
-		}
+        public static explicit operator InputAnalogActionHandle_t(ulong value)
+        {
+            return new InputAnalogActionHandle_t(value);
+        }
 
-		public int CompareTo(InputAnalogActionHandle_t other) {
-			return m_InputAnalogActionHandle.CompareTo(other.m_InputAnalogActionHandle);
-		}
-	}
+        public static explicit operator ulong(InputAnalogActionHandle_t that)
+        {
+            return that.m_InputAnalogActionHandle;
+        }
+    }
 }
 
 #endif // !DISABLESTEAMWORKS

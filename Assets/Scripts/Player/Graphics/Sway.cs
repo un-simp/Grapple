@@ -1,43 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Wildflare.Player.Inputs;
 
-namespace Wildflare.Player.Graphics{
+namespace Wildflare.Player.Graphics
+{
     public class Sway : MonoBehaviour
     {
-        public float intensity = 20;
-        public float damper = 10;
-        private Quaternion originRot;
+        [Header("Movement")]
+        [SerializeField] private float movementIntensity = 20;
+        [SerializeField] private float movementDamper = 10;
+        [SerializeField] private float movementmaxAmount;
+        [Header("Rotation")]
+        [SerializeField] private float rotationIntensity = 20;
+        [SerializeField] private float rotationDamper = 10;
+        private PlayerInput input;
 
-        PlayerInput input;
+        private Vector3 initialPos;
+        private Quaternion initialRot;
 
         public void Awake()
         {
-            originRot = transform.localRotation;
+            initialRot = transform.localRotation;
+            initialPos = transform.localPosition;
+
             input = transform.root.GetComponentInChildren<PlayerInput>();
         }
-        
+
         private void Update()
         {
-            ApplySway();
+            MoveSway();
+            RotSway();
         }
 
-        private void ApplySway()
+        private void RotSway()
         {
             //Inputs
-            float mouseX = input.mouseX;
-            float mouseY = input.mouseY;
+            var mouseX = input.mouseX;
+            var mouseY = input.mouseY;
 
             //Calculate Target Rotation
-            Quaternion adjustmentX = Quaternion.AngleAxis(intensity * -mouseX, Vector3.up);
-            Quaternion adjustmentY = Quaternion.AngleAxis(intensity * mouseY, Vector3.right);
-            Quaternion targetRot = originRot * adjustmentX * adjustmentY ;
+            var adjustmentX = Quaternion.AngleAxis(rotationIntensity * -mouseX, Vector3.up);
+            var adjustmentY = Quaternion.AngleAxis(rotationIntensity * mouseY, Vector3.right);
+            var targetRot = initialRot * adjustmentX * adjustmentY;
 
             //Rotates toward target rotation
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * damper);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * rotationDamper);
         }
 
+        private void MoveSway()
+        {
+            var mouseX = -input.mouseX * movementIntensity;
+            var mouseY = -input.mouseY * movementIntensity;
+
+            mouseX = Mathf.Clamp(mouseX, -movementmaxAmount, movementmaxAmount);
+            mouseY = Mathf.Clamp(mouseY, -movementmaxAmount, movementmaxAmount);
+
+            Vector3 finalPos = new Vector3(mouseX, mouseY, 0);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, finalPos + initialPos, Time.deltaTime * movementDamper);
+            
+        }
     }
 }
-

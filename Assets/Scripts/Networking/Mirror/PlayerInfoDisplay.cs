@@ -1,29 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using Steamworks;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class PlayerInfoDisplay : NetworkBehaviour
 {
-    [SyncVar(hook=nameof(HandleSteamIDUpdated))]private ulong steamId;
-
-
     [SerializeField] private TMP_Text displayNameText;
+
+    [SyncVar(hook = nameof(HandleSteamIDUpdated))]
+    private ulong steamId;
 
     #region Server
 
-    public void SetSteamID(ulong _steamID) => this.steamId = _steamID;
+    public void SetSteamID(ulong _steamID)
+    {
+        steamId = _steamID;
+    }
 
     #endregion
 
     #region Client
 
-    void Update()
-    {
-        
-    }
+    private void Update() { }
 
     private void HandleSteamIDUpdated(ulong oldID, ulong newID)
     {
@@ -31,7 +29,6 @@ public class PlayerInfoDisplay : NetworkBehaviour
 
         displayNameText.text = SteamFriends.GetFriendPersonaName(cSteamID);
     }
-
 
     #endregion
 }

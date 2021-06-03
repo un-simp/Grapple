@@ -1,8 +1,8 @@
 using System.Collections;
+using Mirror;
 using UnityEngine;
 using Wildflare.Player.Graphics.Net;
 using Wildflare.Player.Movement.Net;
-using Mirror;
 
 namespace Wildflare.Player.Combat.Net
 {
@@ -10,41 +10,30 @@ namespace Wildflare.Player.Combat.Net
     [RequireComponent(typeof(GrappleGraphicsNet))]
     public class GrappleNet : NetworkBehaviour
     {
-        private PlayerMovementNet movement;   
-        private GliderNet glider;
-        private GrappleGraphicsNet graphics;
-        private Rigidbody rb;
-        private SpringJoint joint;
-
-        public bool getIsGrappling
-        {
-            get{ return isGrappling; }
-            set{ isGrappling = value; }
-        }
         public float grappleRange = 100;
         public Vector3 hitPos;
-        public RaycastHit hitInfo;
         public LayerMask swingable;
 
-        [Header("Physics Feel")]
-        [Tooltip("Amount that the spring is reduced when active.")]
+        [Header("Physics Feel")] [Tooltip("Amount that the spring is reduced when active.")]
         public float damper = 2;
-        [Tooltip("Strength of the spring.")]
-        public float springiness = 5;
+
+        [Tooltip("Strength of the spring.")] public float springiness = 5;
+
         public float mass = 5;
-
-        private bool isGrappling;
         private bool canGrapple = true;
+        private GliderNet glider;
+        private GrappleGraphicsNet graphics;
+        public RaycastHit hitInfo;
 
-        private bool isActiveWeapon = true;
+        private SpringJoint joint;
+        private PlayerMovementNet movement;
+        private Rigidbody rb;
 
-        public bool getisActiveWeapon
-        {
-            get => isActiveWeapon;
-            set => isActiveWeapon = value;
-        }
+        public bool getIsGrappling { get; set; }
 
-        void Awake()
+        public bool getisActiveWeapon { get; set; } = true;
+
+        private void Awake()
         {
             movement = GetComponent<PlayerMovementNet>();
             glider = GetComponent<GliderNet>();
@@ -53,59 +42,54 @@ namespace Wildflare.Player.Combat.Net
         }
 
         [Client]
-        void Update()
-        {   
-            if(!movement.hasAuthority || !isActiveWeapon) return;
+        private void Update()
+        {
+            if (!movement.hasAuthority || !getisActiveWeapon) return;
             if (!canGrapple) return;
-            
+
             GrappleManager();
 
-            if(!movement.isActive) return;
-            movement.isGrappling = isGrappling;
+            if (!movement.isActive) return;
+            movement.isGrappling = getIsGrappling;
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
-            if(!isClient || !hasAuthority) return;
+            if (!isClient || !hasAuthority) return;
             if (!canGrapple) return;
 
-            if(isGrappling || !isActiveWeapon){
-                DoGrapple();
-            }
+            if (getIsGrappling || !getisActiveWeapon) DoGrapple();
         }
 
-        void GrappleManager()
+        private void GrappleManager()
         {
-            if(Input.GetKey(KeyCode.Mouse0) && !isGrappling && CanGrapple() && !glider.isGliding){
+            if (Input.GetKey(KeyCode.Mouse0) && !getIsGrappling && CanGrapple() && !glider.isGliding)
                 InstantStart();
-            }
-            else if(Input.GetKeyUp(KeyCode.Mouse0) && isGrappling){
-                InstantStop();
-            }
+            else if (Input.GetKeyUp(KeyCode.Mouse0) && getIsGrappling) InstantStop();
         }
 
-        void InstantStart()
+        private void InstantStart()
         {
             StartGrapple();
-            isGrappling = true;
+            getIsGrappling = true;
             CmdSetIsGrappling(true);
         }
+
         public void InstantStop()
         {
             StopGrapple();
-            isGrappling = false;
+            getIsGrappling = false;
             CmdSetIsGrappling(false);
         }
 
-        void StartGrapple()
-        {   
-
+        private void StartGrapple()
+        {
             joint = gameObject.AddComponent<SpringJoint>();
 
             joint.autoConfigureConnectedAnchor = false;
             joint.connectedAnchor = hitPos;
 
-            float distanceFromPoint = Vector3.Distance(transform.position, joint.connectedAnchor);
+            var distanceFromPoint = Vector3.Distance(transform.position, joint.connectedAnchor);
 
             joint.maxDistance = distanceFromPoint * 0.8f;
             joint.minDistance = distanceFromPoint * 0.25f;
@@ -116,55 +100,61 @@ namespace Wildflare.Player.Combat.Net
 
 
             movement.speed = movement.speedOnStart / 3;
-            if(movement.maxVelocity < movement.maxVelocityOnStart *2){
+            if (movement.maxVelocity < movement.maxVelocityOnStart * 2)
                 movement.maxVelocity = movement.maxVelocityOnStart * 2;
-            }
 
             graphics.StartGrapple(hitInfo);
-        }   
+        }
 
-        void DoGrapple()
+        private void DoGrapple()
         {
-            if(joint == null) return;
+            if (joint == null) return;
             var vecToPlayer = (joint.connectedAnchor - transform.position).normalized;
             rb.AddForce(vecToPlayer * movement.upthrust);
         }
 
-        void StopGrapple()
+        private void StopGrapple()
         {
             movement.speed = movement.speedOnStart;
             Destroy(GetComponent<SpringJoint>());
             graphics.StopGrapple();
         }
 
-        public bool CanGrapple(){
+        public bool CanGrapple()
+        {
             RaycastHit hit;
-            bool Raycast = Physics.Raycast(movement.cam.transform.position, movement.cam.transform.forward, out hit, grappleRange);
-            if(Raycast && !isGrappling){
-                if(hit.transform.gameObject.layer == 8){
+            var Raycast = Physics.Raycast(movement.cam.transform.position, movement.cam.transform.forward, out hit,
+                grappleRange);
+            if (Raycast && !getIsGrappling)
+            {
+                if (hit.transform.gameObject.layer == 8)
+                {
                     hitInfo = hit;
                     hitPos = hit.point;
                     return true;
                 }
+
                 return false;
             }
-            else{
-                return false;
-            }
+
+            return false;
         }
 
-        public void OnSelect(){
+        public void OnSelect()
+        {
             getisActiveWeapon = true;
             CmdSetIsActiveWeapon(true);
             StartCoroutine(CanGrappleDelay());
         }
 
-        IEnumerator CanGrappleDelay() 
+        private IEnumerator CanGrappleDelay()
         {
             yield return new WaitForSeconds(0.55f);
             canGrapple = true;
         }
-        public void OnDeselect() {
+
+        public void OnDeselect()
+        {
             canGrapple = false;
             getisActiveWeapon = false;
             CmdSetIsActiveWeapon(true);
@@ -172,13 +162,40 @@ namespace Wildflare.Player.Combat.Net
             CmdCallGrappleStop();
         }
 
-        [Command] void CmdSetIsActiveWeapon(bool _state) => RpcSetIsActiveWeapon(_state);
-        [ClientRpc(includeOwner=false)] void RpcSetIsActiveWeapon(bool _state) => getisActiveWeapon = _state;
+        [Command]
+        private void CmdSetIsActiveWeapon(bool _state)
+        {
+            RpcSetIsActiveWeapon(_state);
+        }
 
-        [Command] void CmdCallGrappleStop() => RpcCallGrappleStop();
-        [ClientRpc(includeOwner=false)] void RpcCallGrappleStop() => InstantStop();
-        
-        [Command]void CmdSetIsGrappling(bool _isGrappling) => RpcSetIsGrappling(_isGrappling);
-        [ClientRpc(includeOwner=false)] void RpcSetIsGrappling(bool _isGrappling) => isGrappling = _isGrappling;
+        [ClientRpc(includeOwner = false)]
+        private void RpcSetIsActiveWeapon(bool _state)
+        {
+            getisActiveWeapon = _state;
+        }
+
+        [Command]
+        private void CmdCallGrappleStop()
+        {
+            RpcCallGrappleStop();
+        }
+
+        [ClientRpc(includeOwner = false)]
+        private void RpcCallGrappleStop()
+        {
+            InstantStop();
+        }
+
+        [Command]
+        private void CmdSetIsGrappling(bool _isGrappling)
+        {
+            RpcSetIsGrappling(_isGrappling);
+        }
+
+        [ClientRpc(includeOwner = false)]
+        private void RpcSetIsGrappling(bool _isGrappling)
+        {
+            getIsGrappling = _isGrappling;
+        }
     }
 }
