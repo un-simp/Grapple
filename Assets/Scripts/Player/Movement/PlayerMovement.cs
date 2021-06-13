@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Security;
 using DG.Tweening;
 using UnityEngine;
 using Wildflare.Player.Cam;
@@ -13,38 +15,40 @@ namespace Wildflare.Player.Movement
     {
         //Assignables
         [SerializeField] private Transform groundCheck;
-        [SerializeField] private LayerMask ground;
+        [SerializeField]private LayerMask groundLayer = 6;
         private PlayerGraphics graphics;
         private PlayerInput input;
+        private PlayerCombat combat;
         private CameraController camController;
         private Camera overlayCam;
+        private new CapsuleCollider collider;
         public Transform orientation;
         public Camera cam;
         public Rigidbody rb;
-
-
+        
         //State
         [SerializeField] private bool debug;
-        private bool readyToJump = true;
+        private bool canJump = true;
         public bool canMove = true;
 
         //Affectors
         [SerializeField] private float acceleration = 1;
-        [SerializeField] private float absMaxVel = 40;
         [SerializeField] private float drag = 0.2f;
         [SerializeField] private int jumpForce = 400;
         [SerializeField] private int gravityMultiplier = 12;
         [SerializeField] private float minGroundRange = 0.1f;
+        public float absMaxVel = 40;
         public float speed = 50;
         public float maxVelocity = 12;
         public float upthrust = 40;
         public float lowerVelocityThresholdMultiplier = 0.9f;
 
         //Stores
-        private float FOV;
         private Vector3 wallTangentDir;
+        [HideInInspector] public float FOV;
         [HideInInspector] public Vector3 wallNormal;
-        private Vector3 velocityWhenLanded;
+        private ContactPoint lastContactPoint;
+        private bool footstepOngoing;
 
         //On Starts
         [HideInInspector] public float speedOnStart;
@@ -54,13 +58,17 @@ namespace Wildflare.Player.Movement
         public bool isMoving { get; set; }
         public float currentVelocity { get; private set; }
         public bool isGrounded { get; private set; }
+        public bool rayHitGround => Physics.Raycast(groundCheck.position, Vector3.down, minGroundRange, groundLayer);
+        
+        //Events
+        public Action OnFootstep;
+        public Action OnLanded;
         
         //States
         public enum state
         {
             Walking, Sliding, Wallrunning, Airborn, Gliding, Grappling
         }
-
         [HideInInspector]public state currentState = state.Airborn;
 
         void Awake()
@@ -69,18 +77,28 @@ namespace Wildflare.Player.Movement
             input = GetComponent<PlayerInput>();
             camController = GetComponent<CameraController>();
             graphics = GetComponent<PlayerGraphics>();
+            combat = GetComponent<PlayerCombat>();
             overlayCam = cam.transform.GetChild(0).GetComponent<Camera>();
+            collider = GetComponent<CapsuleCollider>();
             maxVelocityOnStart = maxVelocity;
             speedOnStart = speed;
             FOV = cam.fieldOfView;
             canMove = true;
         }
 
+        void Update()
+        {
+            groundCheck.localPosition = collider.center - new Vector3(0, (collider.height / 2f), 0);
+            if(!canMove) return;
+            SlideManager();
+        }
+
         private void FixedUpdate()
         {
-            print("Current state: " + currentState);
-            
             if(!canMove) return;
+            
+            //State Independant
+            ClampVelocity();
 
             switch (currentState)
             {
@@ -98,6 +116,7 @@ namespace Wildflare.Player.Movement
                 case state.Wallrunning:
                     WallRun();
                     JumpHandler();
+                    Gravity(); Gravity(); //Double Gravity
                     break;
                 case state.Grappling:
                     AirbornMovement();
@@ -105,13 +124,38 @@ namespace Wildflare.Player.Movement
                     break;
                 case state.Sliding:
                     break;
+                case state.Gliding:
+                    break;
             }
-
-            //State Independant
-            ClampVelocity();
         }
 
         #region Movement
+
+        private void StartWalking(Collision other)
+        {
+            isGrounded = true;
+            canJump = true;
+            wallNormal = Vector3.zero;
+            graphics.SpawnGroundImpact(groundCheck.position, other.transform.GetComponent<Renderer>().material);
+            OnLanded.Invoke();
+            camController.TweenTargetRot(0);
+            combat.canLunge = true;
+            if(currentState == state.Sliding) 
+                return;
+            currentState = state.Walking;
+            StopCoroutine(nameof(Footstep));
+            StartCoroutine(nameof(Footstep));
+        }
+        
+        IEnumerator Footstep()
+        {
+            yield return new WaitForSeconds(0.3f);
+            if (currentState != state.Walking)
+                yield break;
+            if(isMoving)
+                OnFootstep.Invoke();
+            yield return Footstep();
+        }
 
         private void Walking()
         {
@@ -120,6 +164,7 @@ namespace Wildflare.Player.Movement
             HandleFOV(FOV);
             Movement(1, 1);
         }
+        
 
         private void AirbornMovement()
         {
@@ -131,7 +176,6 @@ namespace Wildflare.Player.Movement
         {
             acceleration = currentVelocity / maxVelocity;
             
-            //-0.5 due to the lerping never reaching maxVelocity.
             if (currentState == state.Airborn && currentVelocity >= maxVelocity - 0.5f)
                 maxVelocity += Time.deltaTime * acceleration;
             else if (currentVelocity <= maxVelocity * lowerVelocityThresholdMultiplier) 
@@ -151,18 +195,13 @@ namespace Wildflare.Player.Movement
 
         private void ClampVelocity()
         {
-            //Old clamping code
-
-            //Vector3 tempVector = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-            ////tempVector = Vector3.ClampMagnitude(tempVector, maxVelocity);
-            //tempVector.y = rb.velocity.y;
-
             //New Clamping Code
 
             var noUpVec = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             if (noUpVec.magnitude > maxVelocity)
             {
-                noUpVec *= 0.9f;
+                noUpVec *= 0.97f;
+                noUpVec = Vector3.ClampMagnitude(noUpVec, maxVelocity);
                 noUpVec.y = rb.velocity.y;
                 rb.velocity = noUpVec;
             }
@@ -181,15 +220,15 @@ namespace Wildflare.Player.Movement
 
         private void JumpHandler()
         {
-            if (currentState == state.Walking && readyToJump && input.jumping) Jump();
-
+            if (currentState == state.Walking && canJump && input.jumping) Jump();
+            
             if ((currentState == state.Wallrunning) && input.jumping) JumpWallrun();
         }
 
         private void Jump()
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-            readyToJump = false;
+            canJump = false;
         }
 
         private void JumpWallrun()
@@ -217,6 +256,7 @@ namespace Wildflare.Player.Movement
                     currentState = state.Wallrunning;
                     graphics.SpawnWallImpact(other.GetContact(0).point + wallNormal * 0.2f,
                         other.transform.GetComponent<Renderer>().material, wallNormal);
+                    OnLanded.Invoke();
                     if (Vector3.Dot(orientation.forward, wallTangent) < 0)
                     {
                         camController.TweenTargetRot(15);
@@ -244,6 +284,47 @@ namespace Wildflare.Player.Movement
             //0.5 is 45degrees from the wall
             if (currentState == state.Wallrunning && Vector3.Dot(orientation.forward, wallNormal) > 0.7f && input.yInput > 0)
                 rb.AddForce(wallNormal * jumpForce * 0.5f, ForceMode.VelocityChange);
+            //If touching a ceiling then drop
+            if (wallNormal == -Vector3.up)
+                rb.AddForce(Vector3.down * 5, ForceMode.VelocityChange);
+        }
+
+        #endregion
+
+        #region Sliding
+
+        void SlideManager()
+        {
+            if(currentState == state.Walking)
+            {
+                if (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl))
+                {
+                    if(currentState == state.Sliding) return;
+                    currentState = state.Sliding;
+                    collider.height = 1.2f;
+                    float mag = orientation.InverseTransformDirection(rb.velocity).z;
+                    rb.AddForce(orientation.forward * mag);
+                }
+            }
+
+            if (currentState == state.Sliding)
+            {
+                if (Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.LeftControl))
+                {
+                    collider.height = 2.4f;
+                    if (isGrounded)
+                        currentState = state.Walking;
+                }
+            }
+
+            if (currentState != state.Sliding && collider.height != 2.4f)
+                collider.height = 2.4f;
+        }
+
+        void Slide()
+        {
+            if(rb.velocity.y < 0)
+                rb.AddForce(rb.velocity * 5, ForceMode.Acceleration);
         }
 
         #endregion
@@ -252,60 +333,93 @@ namespace Wildflare.Player.Movement
 
         private void OnCollisionEnter(Collision other)
         {
-            if(currentState == state.Grappling) return;
+            //Disregard the collision if grappling or not on swingable/ground layer
+            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8) || currentState == state.Grappling;
+            if(shouldDisregardCollision) return;
             
-            bool isWall = other.GetContact(0).normal != Vector3.up;
+            bool isWall = other.GetContact(0).normal != Vector3.up && !rayHitGround;
+            //If we touch the ground and we aren't sliding or walking, start walking
             if (!isWall)
             {
-                isGrounded = true;
-                currentState = state.Walking;
-                wallNormal = Vector3.zero;
-                graphics.SpawnGroundImpact(groundCheck.position, other.transform.GetComponent<Renderer>().material);
-                camController.ShakeGroundImpact();
-                camController.TweenTargetRot(0);
+                StartWalking(other);
             }
+            //If we hit a wall then start wallrunning
             else
+            {
                 StartWallrun(other);
+            }
+            
+            //Add force downwards to stop player bouncing
+            if (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl))
+            {
+                rb.AddForce(Vector3.down * 5, ForceMode.VelocityChange);
+            }
         }
 
 
         private void OnCollisionStay(Collision other)
         {
+            //Disregard the collision if grappling or not on swingable/ground layer
+            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8) || currentState == state.Grappling;
+            if(shouldDisregardCollision) return;
+            
+            bool isWall = other.GetContact(0).normal != Vector3.up && !rayHitGround;
+            //If we touch the ground and we aren't sliding, start walking
+            if (!isWall && currentState != state.Walking && currentState != state.Sliding)
+            {
+                StartWalking(other);
+            }
+            
+            //Save the contact point for OnCollisionExit
+            lastContactPoint = other.GetContact(0);
+            
+            //Slide Down Slope
+            bool isSlope = other.GetContact(0).normal != Vector3.up && rayHitGround;
+            if (isSlope && currentState == state.Sliding)
+                Slide();
+
             //Slide Down Wall
-            var isWall = other.GetContact(0).normal != Vector3.up;
             if (isWall && currentState == state.Airborn)
             {
                 rb.AddForce(Vector3.down * 100);
                 rb.velocity = new Vector3(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -10, 0), rb.velocity.z);
             }
-
-            if (!isWall && currentState != state.Walking && currentState != state.Grappling)
-            {
-                isGrounded = true;
-                currentState = state.Walking;
-                wallNormal = Vector3.zero;
-            }
         }
 
         private void OnCollisionExit(Collision other)
         {
-            //6 = Ground, 8 = Swingable
-            if (other.gameObject.layer != 6 && other.gameObject.layer != 8) return;
-
-            //Jumped
-            if (currentState == state.Walking && isGrounded)
-            {
-                currentState = state.Airborn;
-                isGrounded = false;
-                readyToJump = true;
-            }
+            //Disregard the collision if grappling or not on swingable/ground layer
+            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8) || currentState == state.Grappling;
+            if(shouldDisregardCollision) return;
 
             //Stop wallrunning
             if (currentState == state.Wallrunning)
             {
-                currentState = state.Airborn;
                 camController.TweenTargetRot(0);
+                if (rayHitGround)
+                {
+                    currentState = state.Walking;
+                    canJump = true;
+                    return;
+                }
+                currentState = state.Airborn;
             }
+
+            //Jumped
+            //This needs to be placed after the Stop wallrunning logic to ensure that the 
+            //state isn't switched away from wallrunning to airborn before that logic executes
+            var isWall = lastContactPoint.normal != Vector3.up && !rayHitGround;
+            if (currentState == state.Walking && rayHitGround)
+            {
+                currentState = state.Airborn;
+                canJump = false;
+                isGrounded = false;
+                return;
+            }
+            
+            //Handle any anomolies (If any modders are reading this I understand your frustration, just know this was a last ditch effort lmao)
+            if(!rayHitGround)
+                currentState = state.Airborn;
         }
 
         #endregion

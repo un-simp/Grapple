@@ -22,8 +22,8 @@ namespace Wildflare.Audio
 
         private void Start()
         {
-            UpdateSlider();
             SetVolume(PlayerPrefs.GetFloat(key));
+            UpdateSlider();
         }
 
         public void UpdateSlider()

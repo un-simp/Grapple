@@ -1,6 +1,7 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using Wildflare.Player.Combat;
+using Wildflare.Player.Attachments;
 using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Graphics
@@ -16,6 +17,7 @@ namespace Wildflare.Player.Graphics
         [SerializeField] private Transform spearOrientation;
         [SerializeField] private GameObject spearHitParticles;
         [SerializeField] private Material spearHitParticlesMat;
+        [SerializeField] private Animator spearAnim;
 
         public Transform hook;
 
@@ -79,11 +81,25 @@ namespace Wildflare.Player.Graphics
             DrawRope();
             AlterSpeedlineOpacity();
             UpdateSpring();
+            AnimateSpear();
+        }
+
+        private void AnimateSpear()
+        {
+            if (movement.currentState == PlayerMovement.state.Walking)
+            {
+                spearAnim.speed = movement.currentVelocity / movement.maxVelocity;
+            }
+            else if(spearAnim.speed != 0)
+            {
+                spearAnim.speed = 0;
+            }
         }
 
 
         public void StartGrapple(RaycastHit _hitInfo)
         {
+            ChangeGrappleRenderLayer(0);
             hook.parent = movement.cam.transform.parent;
 
             lineEnd.parent = movement.cam.transform.parent;
@@ -92,7 +108,6 @@ namespace Wildflare.Player.Graphics
 
             lineEndTarget = _hitInfo.point;
             inverseHitNormal = (_hitInfo.point - movement.transform.position).normalized;
-            ChangeHookRenderLayer(0);
         }
 
         public void DrawRope()
@@ -125,9 +140,8 @@ namespace Wildflare.Player.Graphics
             for (var i = 0; i < resolution + 1; i++)
             {
                 var delta = i / (float) resolution;
-                var offset = up * (waveHeight * Mathf.Sin(delta * waveCount * Mathf.PI) * spring.Value *
-                                   affectCurve.Evaluate(delta));
-                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position, delta) + offset);
+                var offset = up * (waveHeight * Mathf.Sin(delta * waveCount * Mathf.PI) * spring.Value * affectCurve.Evaluate(delta));
+                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position + hook.up * .5f, delta) + offset);
             }
 
             hook.up = inverseHitNormal;
@@ -136,13 +150,11 @@ namespace Wildflare.Player.Graphics
         public void StopGrapple()
         {
             lineEndTarget = hookStart.position;
-
             var cam = movement.cam.transform;
             hook.parent = cam;
             lineEnd.parent = cam;
-
-            ChangeHookRenderLayer(8);
             LineDismantle();
+            ChangeGrappleRenderLayer(7);
         }
 
         private void UpdateSpring()
@@ -174,11 +186,14 @@ namespace Wildflare.Player.Graphics
             speedlines.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -40), new Vector3(0, 0, -16), opacity);
         }
 
-        public void ChangeHookRenderLayer(int _layer)
+        void ChangeGrappleRenderLayer(int desiredLayer)
         {
-            foreach (Transform child in hook.GetChild(0)) child.gameObject.layer = _layer;
-
-            //lr.gameObject.layer = _layer;
+            //Get all renderers in spear mesh and change layers
+            Transform spearMesh = hook.GetChild(0);
+            foreach (Transform child in spearMesh)
+            {
+                child.gameObject.layer = desiredLayer;
+            }
         }
     }
 }

@@ -17,6 +17,8 @@ namespace Wildflare.Player.Graphics
         private Vector3 initialPos;
         private Quaternion initialRot;
 
+        [SerializeField]private bool enableMovement = false;
+
         public void Awake()
         {
             initialRot = transform.localRotation;
@@ -27,8 +29,9 @@ namespace Wildflare.Player.Graphics
 
         private void Update()
         {
-            MoveSway();
             RotSway();
+            if(!enableMovement) return;
+            MoveSway();
         }
 
         private void RotSway()

@@ -2,17 +2,18 @@
 using UnityEngine;
 using Wildflare.Player.Movement;
 using MilkShake;
+using UnityEngine.Serialization;
 
 namespace Wildflare.Player.Cam
 {
     public class CameraController : MonoBehaviour
     {
         [SerializeField] private Vector2 sensitivity;
-        [SerializeField] private Transform playerCamParent;
-        [SerializeField] private ShakePreset groundImpact;
-        [SerializeField] private Camera cam;
-        private PlayerMovement movement;
+        [SerializeField] private Transform cameraLogic;
+        [SerializeField] private ShakePreset lungePreset;
+        [SerializeField] private Camera mainCam;
         public Transform orientation;
+        private PlayerMovement movement;
         
         [Range(0.0001f, 10f)] [SerializeField] private float wallrunDamper;
         private float desiredX;
@@ -56,7 +57,7 @@ namespace Wildflare.Player.Cam
         private void Rotation()
         {
             //Find current look rotation
-            var rot = playerCamParent.localRotation.eulerAngles;
+            var rot = cameraLogic.localRotation.eulerAngles;
             desiredX = rot.y + mouseX;
 
             //Rotate, and also make sure we dont over- or under-rotate.
@@ -64,7 +65,7 @@ namespace Wildflare.Player.Cam
             xRotation = Mathf.Clamp(xRotation, -88f, 88f);
 
             //Perform the rotations
-            playerCamParent.localRotation = Quaternion.Euler(xRotation, desiredX, targetRot);
+            cameraLogic.localRotation = Quaternion.Euler(xRotation, desiredX, targetRot);
             orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0);
         }
 
@@ -85,7 +86,7 @@ namespace Wildflare.Player.Cam
             if(movement.currentState == PlayerMovement.state.Airborn)
             {
                 // > as the offset is negative
-                if (cam.transform.localPosition.y > maximumOffset)
+                if (mainCam.transform.localPosition.y > maximumOffset)
                 {
                     currentOffset = Mathf.Lerp(currentOffset, maximumOffset, Time.deltaTime * (1 / fallSmoothing));
                 }
@@ -95,16 +96,14 @@ namespace Wildflare.Player.Cam
                 currentOffset = Mathf.Lerp(currentOffset, 0, Time.deltaTime * (1 / impactSmoothing));
             }
 
-            Vector3 camPos = cam.transform.localPosition;
+            Vector3 camPos = mainCam.transform.localPosition;
             camPos = new Vector3(camPos.x, currentOffset, camPos.z);
-            cam.transform.localPosition = camPos;
+            mainCam.transform.localPosition = camPos;
         }
 
-
-
-        public void ShakeGroundImpact()
+        public void ShakeLunge()
         {
-            //Shaker.ShakeAll(groundImpact);
+            Shaker.ShakeAll(lungePreset);
         }
 
         public void TweenTargetRot(float _endRot)

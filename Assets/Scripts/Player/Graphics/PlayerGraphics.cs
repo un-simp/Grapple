@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using Wildflare.Player.Cam;
 using Wildflare.Player.Movement;
 
 namespace Wildflare.Player.Graphics
@@ -7,20 +8,23 @@ namespace Wildflare.Player.Graphics
     public class PlayerGraphics : MonoBehaviour
     {
         [SerializeField] private TMP_Text velocityTxt;
+        [SerializeField] private TMP_Text stateTxt;
 
         [SerializeField] private GameObject impactParticles;
         [SerializeField] private Material impactMat;
 
         private PlayerMovement movement;
 
-        private void Start()
+        private void Awake()
         {
             movement = GetComponent<PlayerMovement>();
         }
 
         public void Update()
         {
-            velocityTxt.text = movement.currentVelocity.ToString("F2");
+            float vel = new Vector3(movement.rb.velocity.x, 0, movement.rb.velocity.z).magnitude;
+            velocityTxt.text = vel.ToString("F2");
+            stateTxt.text = "State: " + movement.currentState;
         }
 
         public void SpawnGroundImpact(Vector3 _position, Material _other)
