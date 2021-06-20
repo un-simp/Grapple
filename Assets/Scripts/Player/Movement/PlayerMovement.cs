@@ -67,7 +67,7 @@ namespace Wildflare.Player.Movement
         //States
         public enum state
         {
-            Walking, Sliding, Wallrunning, Airborn, Gliding, Grappling
+            Walking, Wallrunning, Airborn, Gliding, Grappling
         }
         [HideInInspector]public state currentState = state.Airborn;
 
@@ -84,13 +84,7 @@ namespace Wildflare.Player.Movement
             speedOnStart = speed;
             FOV = cam.fieldOfView;
             canMove = true;
-        }
-
-        void Update()
-        {
-            groundCheck.localPosition = collider.center - new Vector3(0, (collider.height / 2f), 0);
-            if(!canMove) return;
-            SlideManager();
+            currentState = state.Airborn;
         }
 
         private void FixedUpdate()
@@ -122,8 +116,6 @@ namespace Wildflare.Player.Movement
                     AirbornMovement();
                     Gravity();
                     break;
-                case state.Sliding:
-                    break;
                 case state.Gliding:
                     break;
             }
@@ -140,8 +132,6 @@ namespace Wildflare.Player.Movement
             OnLanded.Invoke();
             camController.TweenTargetRot(0);
             combat.canLunge = true;
-            if(currentState == state.Sliding) 
-                return;
             currentState = state.Walking;
             StopCoroutine(nameof(Footstep));
             StartCoroutine(nameof(Footstep));
@@ -149,7 +139,7 @@ namespace Wildflare.Player.Movement
         
         IEnumerator Footstep()
         {
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.2f);
             if (currentState != state.Walking)
                 yield break;
             if(isMoving)
@@ -290,55 +280,26 @@ namespace Wildflare.Player.Movement
         }
 
         #endregion
-
-        #region Sliding
-
-        void SlideManager()
-        {
-            if(currentState == state.Walking)
-            {
-                if (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl))
-                {
-                    if(currentState == state.Sliding) return;
-                    currentState = state.Sliding;
-                    collider.height = 1.2f;
-                    float mag = orientation.InverseTransformDirection(rb.velocity).z;
-                    rb.AddForce(orientation.forward * mag);
-                }
-            }
-
-            if (currentState == state.Sliding)
-            {
-                if (Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.LeftControl))
-                {
-                    collider.height = 2.4f;
-                    if (isGrounded)
-                        currentState = state.Walking;
-                }
-            }
-
-            if (currentState != state.Sliding && collider.height != 2.4f)
-                collider.height = 2.4f;
-        }
-
-        void Slide()
-        {
-            if(rb.velocity.y < 0)
-                rb.AddForce(rb.velocity * 5, ForceMode.Acceleration);
-        }
-
-        #endregion
         
         #region Collisions
 
         private void OnCollisionEnter(Collision other)
         {
             //Disregard the collision if grappling or not on swingable/ground layer
-            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8) || currentState == state.Grappling;
+            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8);
             if(shouldDisregardCollision) return;
+
             
             bool isWall = other.GetContact(0).normal != Vector3.up && !rayHitGround;
-            //If we touch the ground and we aren't sliding or walking, start walking
+            
+            if (currentState == state.Grappling && !isWall)
+            {
+                isGrounded = true;
+                canJump = true;
+                return;
+            }
+            
+            //If we touch the ground and we aren't walking, start walking
             if (!isWall)
             {
                 StartWalking(other);
@@ -364,19 +325,14 @@ namespace Wildflare.Player.Movement
             if(shouldDisregardCollision) return;
             
             bool isWall = other.GetContact(0).normal != Vector3.up && !rayHitGround;
-            //If we touch the ground and we aren't sliding, start walking
-            if (!isWall && currentState != state.Walking && currentState != state.Sliding)
+            //If we touch the ground and we aren't walking, start walking
+            if (!isWall && currentState != state.Walking)
             {
                 StartWalking(other);
             }
             
             //Save the contact point for OnCollisionExit
             lastContactPoint = other.GetContact(0);
-            
-            //Slide Down Slope
-            bool isSlope = other.GetContact(0).normal != Vector3.up && rayHitGround;
-            if (isSlope && currentState == state.Sliding)
-                Slide();
 
             //Slide Down Wall
             if (isWall && currentState == state.Airborn)
@@ -389,8 +345,17 @@ namespace Wildflare.Player.Movement
         private void OnCollisionExit(Collision other)
         {
             //Disregard the collision if grappling or not on swingable/ground layer
-            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8) || currentState == state.Grappling;
+            bool shouldDisregardCollision = (other.gameObject.layer != 6 && other.gameObject.layer != 8);
             if(shouldDisregardCollision) return;
+            
+            var isWall = lastContactPoint.normal != Vector3.up && !rayHitGround;
+            
+            if (currentState == state.Grappling && !isWall)
+            {
+                isGrounded = true;
+                canJump = true;
+                return;
+            }
 
             //Stop wallrunning
             if (currentState == state.Wallrunning)
@@ -408,7 +373,6 @@ namespace Wildflare.Player.Movement
             //Jumped
             //This needs to be placed after the Stop wallrunning logic to ensure that the 
             //state isn't switched away from wallrunning to airborn before that logic executes
-            var isWall = lastContactPoint.normal != Vector3.up && !rayHitGround;
             if (currentState == state.Walking && rayHitGround)
             {
                 currentState = state.Airborn;

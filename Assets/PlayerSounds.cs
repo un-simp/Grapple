@@ -34,7 +34,7 @@ namespace Wildflare
                 windAS.volume = 0;
                 return;
             }
-            windAS.volume = (movement.currentVelocity - 12) / movement.absMaxVel * 0.05f;
+            windAS.volume = (movement.currentVelocity - 12) / movement.absMaxVel * 0.05f / 2;
         }
 
         public void PlayFootstepSound()
@@ -42,12 +42,12 @@ namespace Wildflare
             if(footstepSounds.Length == 0) return;
             //Find a random sound in the array
             AudioClip randomSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
-            footstepsAS.PlayOneShot(randomSound);
+            footstepsAS.PlayOneShot(randomSound, 0.2f);
         }
 
         public void PlayLandedSound()
         {
-            landedAS.PlayOneShot(landedSound);
+            landedAS.PlayOneShot(landedSound, 0.3f);
         }
         
         
