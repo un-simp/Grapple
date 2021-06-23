@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Security;
+using Wildflare.Player.Combat;
 using DG.Tweening;
 using UnityEngine;
 using Wildflare.Player.Cam;
 using Wildflare.Player.Graphics;
 using Wildflare.Player.Inputs;
-using Wildflare.UI.MenuStates;
 
 namespace Wildflare.Player.Movement
 {
@@ -135,6 +134,13 @@ namespace Wildflare.Player.Movement
             currentState = state.Walking;
             StopCoroutine(nameof(Footstep));
             StartCoroutine(nameof(Footstep));
+            
+            //Add a small force to counteract friction in the case of 'B-hopping'
+            if (isMoving)
+            {
+                var dir = (orientation.forward * input.yInput + orientation.right * input.xInput).normalized;
+                rb.AddForce(dir * 3, ForceMode.Impulse);
+            }
         }
         
         IEnumerator Footstep()

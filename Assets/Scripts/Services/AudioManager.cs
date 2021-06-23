@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using Wildflare.UI.Settings;
 
 namespace Wildflare.Audio
 {
@@ -22,7 +23,7 @@ namespace Wildflare.Audio
 
         private void Start()
         {
-            SetVolume(PlayerPrefs.GetFloat(key));
+            SetVolume(SettingsManager.singleton.GetSFXVolume());
             UpdateSlider();
         }
 
@@ -31,13 +32,13 @@ namespace Wildflare.Audio
             var sliders = FindObjectsOfType<Slider>();
             foreach (var slider in sliders)
                 if (slider.CompareTag("Volume"))
-                    slider.value = PlayerPrefs.GetFloat(key);
+                    slider.value = SettingsManager.singleton.GetSFXVolume();
         }
 
         public void SetVolume(float _desiredLinearVolume)
         {
             //Stored As Linear
-            PlayerPrefs.SetFloat(key, _desiredLinearVolume);
+            SettingsManager.singleton.SetSFXVolume(_desiredLinearVolume);
             //Logarithmicly Converted
             mixer.SetFloat(key, Mathf.Log10(_desiredLinearVolume) * 20);
         }

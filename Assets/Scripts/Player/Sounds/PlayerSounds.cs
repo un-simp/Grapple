@@ -5,7 +5,7 @@ using UnityEngine;
 using Wildflare.Player.Movement;
 using Random = UnityEngine.Random;
 
-namespace Wildflare
+namespace Wildflare.Player.Sounds
 {
     public class PlayerSounds : MonoBehaviour
     {
@@ -19,6 +19,14 @@ namespace Wildflare
         [SerializeField] private AudioClip landedSound;
         [Header("Wind")] 
         [SerializeField] private AudioSource windAS;
+
+        [Header("Grapple")] 
+        [SerializeField] private AudioSource grappleAS;
+        [SerializeField] private AudioClip grappleThrow;
+        [SerializeField] private AudioClip grappleImpact;
+
+        [Header("Lunge")] [SerializeField] private AudioSource lungeAS;
+        [SerializeField] private AudioClip lunge;
 
         private void Awake()
         {
@@ -43,6 +51,23 @@ namespace Wildflare
             //Find a random sound in the array
             AudioClip randomSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
             footstepsAS.PlayOneShot(randomSound, 0.2f);
+        }
+
+        public void PlayGrappleThrow(Vector3 hitPoint)
+        {
+            grappleAS.PlayOneShot(grappleThrow, 0.2f);
+            StartCoroutine(PlayGrappleHit(hitPoint));
+        }
+
+        private IEnumerator PlayGrappleHit(Vector3 hitPoint)
+        {
+            yield return new WaitForSeconds(0.1f);
+            AudioSource.PlayClipAtPoint(grappleImpact, hitPoint);
+        }
+
+        public void PlayLunge()
+        {
+            lungeAS.PlayOneShot(lunge, 0.2f);
         }
 
         public void PlayLandedSound()

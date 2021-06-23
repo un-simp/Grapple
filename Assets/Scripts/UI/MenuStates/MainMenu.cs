@@ -31,15 +31,15 @@ namespace Wildflare.UI.MenuStates
 
         public override IEnumerator SwitchState(int _desiredState)
         {
+            yield return End();
             if (_desiredState == 0)
             {
-                yield return End();
                 menuManager.SetState(new LevelMenu(menuManager));
             }
 
             if (_desiredState == 1)
             {
-                //optionsManager.SetState(new LevelMenu(menuManager));
+                menuManager.SetState(new OptionsMenu(menuManager));
             }
         }
     }

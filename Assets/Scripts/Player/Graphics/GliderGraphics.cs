@@ -21,12 +21,14 @@ namespace Wildflare.Player.Graphics
         {
             gliderLogic = GetComponent<Glider>();
             //Store The Resting Transforms
-            gliderStartPos = glider.transform.localPosition;
-            gliderStartRot = glider.transform.localEulerAngles;
+            gliderStartPos = glider.localPosition;
+            var localEulerAngles = glider.localEulerAngles;
+            gliderStartRot = localEulerAngles;
             
             //Move glider to non-resting transforms
             glider.localPosition = gliderStartPos + gliderOffset;
-            glider.localEulerAngles = new Vector3(90, glider.localEulerAngles.y, glider.localEulerAngles.z);
+            localEulerAngles = new Vector3(90, localEulerAngles.y, localEulerAngles.z);
+            glider.localEulerAngles = localEulerAngles;
 
             gliderProgressBar.transform.localPosition = new Vector2(-1020, 0);
         }
@@ -50,9 +52,11 @@ namespace Wildflare.Player.Graphics
         public void StartGliding()
         {
             //Enable glider and move to resting transform
-            //glider.gameObject.SetActive(true);
             glider.DOLocalMove(gliderStartPos, 0.3f);
             glider.DOLocalRotate(gliderStartRot, 0.4f); 
+            
+            //Bring In graphic
+            gliderProgressBar.transform.DOLocalMoveX(-894, 0.2f).SetEase(Ease.OutExpo);
         }
         
         public void StopGliding()
@@ -60,14 +64,6 @@ namespace Wildflare.Player.Graphics
             //Enable glider and move to resting transform
             glider.DOLocalMove(gliderStartPos + gliderOffset, 0.3f);
             glider.DOLocalRotate(new Vector3(90, gliderStartRot.y, glider.localEulerAngles.z), 0.4f);
-            //StartCoroutine(GliderStopDelay());
-        }
-
-        IEnumerator GliderStopDelay()
-        {
-            //Wait for animation to finish and disable gameobject
-            yield return new WaitForSeconds(0.4f);
-            glider.gameObject.SetActive(false);
         }
     }
 }

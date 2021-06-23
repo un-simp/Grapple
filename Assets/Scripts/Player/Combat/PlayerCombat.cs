@@ -5,14 +5,16 @@ using UnityEngine;
 using Wildflare.Player.Cam;
 using Wildflare.Player.Inputs;
 using Wildflare.Player.Movement;
+using Wildflare.Player.Sounds;
 
-namespace Wildflare
+namespace Wildflare.Player.Combat
 {
     public class PlayerCombat : MonoBehaviour
     {
         [SerializeField] private Transform spear;
         private PlayerInput input;
         private PlayerMovement movement;
+        [SerializeField]private PlayerSounds sounds;
         private CameraController camController;
 
         [SerializeField] private float lungeForce;
@@ -47,6 +49,7 @@ namespace Wildflare
             movement.maxVelocity += 2;
             camController.ShakeLunge();
             LungeAnimation();
+            sounds.PlayLunge();
             canLunge = false;
         }
 

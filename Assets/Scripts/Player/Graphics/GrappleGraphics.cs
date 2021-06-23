@@ -176,6 +176,15 @@ namespace Wildflare.Player.Graphics
             inverseHitNormal = Vector3.zero;
         }
 
+        public void SpawnParticle(RaycastHit hit)
+        {
+            var hitMat = hit.transform.GetComponent<Renderer>().material;
+            spearHitParticlesMat.color = hitMat.color;
+            spearHitParticlesMat.mainTexture = hitMat.mainTexture != null ? hitMat.mainTexture : null;
+            var particle = Instantiate(spearHitParticles, hit.point, Quaternion.identity);
+            particle.transform.forward = hit.normal;
+        }
+
         public void AlterSpeedlineOpacity()
         {
             float opacity = 0;

@@ -42,6 +42,7 @@ namespace Wildflare.Sounds
 
         public void SliderSound(float _newVol)
         {
+            sources[0].volume = 1;
             if (_newVol > volume + 0.1f || _newVol < volume - 0.1f)
             {
                 volume = _newVol;

@@ -3,6 +3,7 @@ using UnityEngine;
 using Wildflare.Player.Cam;
 using Wildflare.Player.Graphics;
 using Wildflare.Player.Movement;
+using Wildflare.Player.Sounds;
 
 namespace Wildflare.Player.Attachments
 {
@@ -14,8 +15,8 @@ namespace Wildflare.Player.Attachments
         public Vector3 hitPos;
         public LayerMask swingable;
 
-        [Header("Physics Feel")] [Tooltip("Amount that the spring is reduced when active.")]
-        public float damper = 2;
+        [Header("Physics Feel")] 
+        [Tooltip("Amount that the spring is reduced when active.")] public float damper = 2;
 
         [Tooltip("Strength of the spring.")] public float springiness = 5;
 
@@ -24,6 +25,7 @@ namespace Wildflare.Player.Attachments
         private GrappleGraphics graphics;
         public RaycastHit hitInfo;
 
+        [SerializeField] private PlayerSounds sounds;
         private SpringJoint joint;
         private PlayerMovement movement;
         private Rigidbody rb;
@@ -104,6 +106,8 @@ namespace Wildflare.Player.Attachments
                 movement.maxVelocity = movement.maxVelocityOnStart * 2;
 
             graphics.StartGrapple(hitInfo);
+            graphics.SpawnParticle(hitInfo);
+            sounds.PlayGrappleThrow(joint.connectedAnchor);
         }
 
         private void DoGrapple()
