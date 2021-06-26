@@ -1,12 +1,17 @@
 using UnityEngine;
+using Wildflare.UI.Settings;
 
 namespace Wildflare.Services
 {
     public class GameplayManager : MonoBehaviour
     {
-        private void Start()
+        public static GameplayManager singleton;
+
+        void Awake() => singleton = this;
+
+        public void SetSensitivity(float value)
         {
-            Application.targetFrameRate = 240;
+            SettingsManager.SetSensitivity(value);
         }
     }
 }

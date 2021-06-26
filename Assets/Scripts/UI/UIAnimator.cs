@@ -7,8 +7,8 @@ namespace Wildflare.UI
     [RequireComponent(typeof(EventTrigger))]
     public class UIAnimator : MonoBehaviour
     {
-        [SerializeField] private float multiplier;
-        [SerializeField] private float time;
+        [SerializeField] private float multiplier = 1.1f;
+        [SerializeField] private float time = 0.2f;
 
         private StartState startState;
         private EventTrigger trigger;

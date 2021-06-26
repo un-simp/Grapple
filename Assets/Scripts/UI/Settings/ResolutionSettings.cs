@@ -6,7 +6,7 @@ namespace Wildflare.UI.Settings
 {
     public class ResolutionSettings : MonoBehaviour, ISettingLogic
     {
-        void Start() => ApplySettings(SettingsManager.singleton.GetResolution());
+        void Start() => ApplySettings(SettingsManager.GetResolution());
         
         public void ApplySettings(int index)
         {
@@ -28,9 +28,9 @@ namespace Wildflare.UI.Settings
                     Screen.SetResolution(1920, 1080, PlayerPrefs.GetInt("IsFullscreen") != 0);
                     break;
             }
-            SettingsManager.singleton.SetResolution(index);
+            SettingsManager.SetResolution(index);
         }
 
-        public int GetCurrentSetting() => SettingsManager.singleton.GetResolution();
+        public int GetCurrentSetting() => SettingsManager.GetResolution();
     }
 }

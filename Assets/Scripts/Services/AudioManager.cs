@@ -8,11 +8,11 @@ namespace Wildflare.Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        private const string key = "SFXVolume";
         public static AudioManager instance;
         public static List<AudioSource> sources = new List<AudioSource>();
 
-        [SerializeField] private AudioMixer mixer;
+        [SerializeField] private AudioMixer soundMixer;
+        [SerializeField] private AudioMixer musicMixer;
 
         private void Awake()
         {
@@ -23,24 +23,24 @@ namespace Wildflare.Audio
 
         private void Start()
         {
-            SetVolume(SettingsManager.singleton.GetSFXVolume());
-            UpdateSlider();
+            SetSFXVolume(SettingsManager.GetSFXVolume());
+            SetMusicVolume(SettingsManager.GetMusicVolume());
         }
 
-        public void UpdateSlider()
-        {
-            var sliders = FindObjectsOfType<Slider>();
-            foreach (var slider in sliders)
-                if (slider.CompareTag("Volume"))
-                    slider.value = SettingsManager.singleton.GetSFXVolume();
-        }
-
-        public void SetVolume(float _desiredLinearVolume)
+        public void SetSFXVolume(float _desiredLinearVolume)
         {
             //Stored As Linear
-            SettingsManager.singleton.SetSFXVolume(_desiredLinearVolume);
+            SettingsManager.SetSFXVolume(_desiredLinearVolume);
             //Logarithmicly Converted
-            mixer.SetFloat(key, Mathf.Log10(_desiredLinearVolume) * 20);
+            soundMixer.SetFloat("SFXVolume", Mathf.Log10(_desiredLinearVolume) * 20);
+        }
+        
+        public void SetMusicVolume(float _desiredLinearVolume)
+        {
+            //Stored As Linear
+            SettingsManager.SetMusicVolume(_desiredLinearVolume);
+            //Logarithmicly Converted
+            musicMixer.SetFloat("MusicVolume", Mathf.Log10(_desiredLinearVolume) * 20);
         }
     }
 }

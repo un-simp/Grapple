@@ -3,12 +3,12 @@ using UnityEngine;
 using Wildflare.Player.Movement;
 using MilkShake;
 using UnityEngine.Serialization;
+using Wildflare.UI.Settings;
 
 namespace Wildflare.Player.Cam
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField] private Vector2 sensitivity;
         [SerializeField] private Transform cameraLogic;
         [SerializeField] private ShakePreset lungePreset;
         [SerializeField] private Camera mainCam;
@@ -28,8 +28,12 @@ namespace Wildflare.Player.Cam
         [Range(-0.0001f, -1f)][SerializeField] private float maximumOffset;
         private float currentOffset;
 
+        [SerializeField] private Vector2 sensitivity;
+        private float sensitivityMultiplier;
         private void Awake()
         {
+            SettingsManager.onSensitivityChanged += SetSensitivityMultiplier;
+            SetSensitivityMultiplier();
             movement = GetComponent<PlayerMovement>();
         }
 
@@ -42,8 +46,8 @@ namespace Wildflare.Player.Cam
         private void Update()
         {
 
-            mouseX = Input.GetAxis("Mouse X") * sensitivity.x * Time.deltaTime;
-            mouseY = Input.GetAxis("Mouse Y") * sensitivity.y * Time.deltaTime;
+            mouseX = Input.GetAxis("Mouse X") * sensitivity.x * sensitivityMultiplier * Time.fixedDeltaTime;
+            mouseY = Input.GetAxis("Mouse Y") * sensitivity.y * sensitivityMultiplier * Time.fixedDeltaTime;
         }
 
         private void LateUpdate()
@@ -109,6 +113,11 @@ namespace Wildflare.Player.Cam
         public void TweenTargetRot(float _endRot)
         {
             DOTween.To(() => targetRot, x => targetRot = x, _endRot, wallrunDamper).SetEase(Ease.OutExpo);
+        }
+
+        public void SetSensitivityMultiplier()
+        {
+            sensitivityMultiplier = SettingsManager.GetSensitivity() * 2;
         }
     }
 }

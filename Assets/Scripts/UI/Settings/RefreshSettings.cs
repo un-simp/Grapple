@@ -28,9 +28,9 @@ namespace Wildflare.UI.Settings
                     Application.targetFrameRate = 60;
                     break;
             }
-            SettingsManager.singleton.SetRefreshRate(index);
+            SettingsManager.SetRefreshRate(index);
         }
 
-        public int GetCurrentSetting() => SettingsManager.singleton.GetRefreshRate();
+        public int GetCurrentSetting() => SettingsManager.GetRefreshRate();
     }
 }

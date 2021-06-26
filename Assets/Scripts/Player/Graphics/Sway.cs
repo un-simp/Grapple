@@ -46,7 +46,7 @@ namespace Wildflare.Player.Graphics
             var targetRot = initialRot * adjustmentX * adjustmentY;
 
             //Rotates toward target rotation
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * rotationDamper);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.fixedDeltaTime * rotationDamper);
         }
 
         private void MoveSway()
@@ -58,7 +58,7 @@ namespace Wildflare.Player.Graphics
             mouseY = Mathf.Clamp(mouseY, -movementmaxAmount, movementmaxAmount);
 
             Vector3 finalPos = new Vector3(mouseX, mouseY, 0);
-            transform.localPosition = Vector3.Lerp(transform.localPosition, finalPos + initialPos, Time.deltaTime * movementDamper);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, finalPos + initialPos, Time.fixedDeltaTime * movementDamper);
             
         }
     }

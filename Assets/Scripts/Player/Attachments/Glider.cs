@@ -16,6 +16,7 @@ namespace Wildflare.Player.Attachments
         private PlayerMovement movement;
         private GliderGraphics graphics;
         private bool canGlide;
+        public bool IsGliding { get; set; }
         
         private void Awake()
         {
@@ -72,6 +73,7 @@ namespace Wildflare.Player.Attachments
 
         void StartGliding()
         {
+            IsGliding = true;
             movement.currentState = PlayerMovement.state.Gliding;
             graphics.StartGliding();
         }
@@ -82,8 +84,9 @@ namespace Wildflare.Player.Attachments
             rb.AddForce(movement.orientation.forward * 0.5f, ForceMode.VelocityChange);
         }
 
-        void StopGliding()
+        public void StopGliding()
         {
+            IsGliding = false;
             canGlide = false;
             currentGlideTime = 0;
             graphics.StopGliding();

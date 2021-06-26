@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using Wildflare.Audio;
+using Wildflare.UI;
 
 namespace Wildflare.Sounds
 {
-    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(UIAnimator))]
     public class UISounds : MonoBehaviour
     {
         [SerializeField] private AudioClip hover;

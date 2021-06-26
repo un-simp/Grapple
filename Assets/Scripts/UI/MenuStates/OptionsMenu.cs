@@ -16,7 +16,7 @@ namespace Wildflare.UI.MenuStates
         
         public override IEnumerator End()
         {
-            Animate(new Vector3(2250, 0, 0), 1);
+            Animate(new Vector3(2250, 0, 0), 0);
             yield break;
         }
         

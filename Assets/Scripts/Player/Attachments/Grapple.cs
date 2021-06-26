@@ -86,6 +86,9 @@ namespace Wildflare.Player.Attachments
         private void StartGrapple()
         {
             GetComponent<CameraController>().TweenTargetRot(0);
+            var glider = GetComponent<Glider>();
+            if (glider.IsGliding)
+                glider.StopGliding();
             joint = gameObject.AddComponent<SpringJoint>();
 
             joint.autoConfigureConnectedAnchor = false;
