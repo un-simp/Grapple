@@ -47,16 +47,16 @@ namespace Wildflare.Player.Attachments
         private void FixedUpdate()
         {
             if (!canGrapple) return;
-            if (movement.currentState != PlayerMovement.state.Grappling) return;
+            if (PlayerMovement.currentState != PlayerMovement.state.Grappling) return;
             DoGrapple();
         }
 
         private void GrappleManager()
         {
-            bool isGrappling = movement.currentState == PlayerMovement.state.Grappling;
+            bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (Input.GetKey(KeyCode.Mouse0) && !isGrappling && CanGrapple())
             {
-                movement.currentState = PlayerMovement.state.Grappling;
+                PlayerMovement.currentState = PlayerMovement.state.Grappling;
                 InstantStart();
             }
                 
@@ -64,12 +64,12 @@ namespace Wildflare.Player.Attachments
             {
                 InstantStop();
                 if (movement.rayHitGround)
-                    movement.currentState = PlayerMovement.state.Walking;
+                    PlayerMovement.currentState = PlayerMovement.state.Walking;
                 else
-                    movement.currentState = PlayerMovement.state.Airborn;
+                    PlayerMovement.currentState = PlayerMovement.state.Airborn;
             }
             
-            if(GetComponent<SpringJoint>() && movement.currentState != PlayerMovement.state.Grappling)
+            if(GetComponent<SpringJoint>() && PlayerMovement.currentState != PlayerMovement.state.Grappling)
                 Destroy(GetComponent<SpringJoint>());
         }
         
@@ -124,7 +124,7 @@ namespace Wildflare.Player.Attachments
         private void StopGrapple()
         {
             movement.speed = movement.speedOnStart;
-            if(GetComponent<SpringJoint>() && movement.currentState != PlayerMovement.state.Grappling)
+            if(GetComponent<SpringJoint>() && PlayerMovement.currentState != PlayerMovement.state.Grappling)
                 Destroy(GetComponent<SpringJoint>());
             graphics.StopGrapple();
         }
@@ -133,7 +133,7 @@ namespace Wildflare.Player.Attachments
         {
             RaycastHit hit;
             var Raycast = Physics.Raycast(movement.cam.transform.position, movement.cam.transform.forward, out hit, grappleRange);
-            bool isGrappling = movement.currentState == PlayerMovement.state.Grappling;
+            bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (Raycast && !isGrappling)
             {
                 if (hit.transform.gameObject.layer == 8)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Wildflare.UI.Settings;
 
@@ -9,6 +10,8 @@ namespace Wildflare.Audio
     public class AudioManager : MonoBehaviour
     {
         public static AudioManager instance;
+        [SerializeField] private AudioSource musicSource;
+        [SerializeField] private AudioClip[] musics;
         public static List<AudioSource> sources = new List<AudioSource>();
 
         [SerializeField] private AudioMixer soundMixer;
@@ -16,9 +19,13 @@ namespace Wildflare.Audio
 
         private void Awake()
         {
-            if (instance != null) return;
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+                Destroy(gameObject);
         }
 
         private void Start()
@@ -41,6 +48,15 @@ namespace Wildflare.Audio
             SettingsManager.SetMusicVolume(_desiredLinearVolume);
             //Logarithmicly Converted
             musicMixer.SetFloat("MusicVolume", Mathf.Log10(_desiredLinearVolume) * 20);
+        }
+
+        public void OnSceneLoad()
+        {
+            var newClip = musics[SceneManager.GetActiveScene().buildIndex];
+            if (newClip == musicSource.clip) return;
+            musicSource.Stop();
+            musicSource.clip = newClip;
+            musicSource.Play();
         }
     }
 }

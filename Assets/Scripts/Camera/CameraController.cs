@@ -87,7 +87,7 @@ namespace Wildflare.Player.Cam
 
         private void CameraFall()
         {
-            if(movement.currentState == PlayerMovement.state.Airborn)
+            if(PlayerMovement.currentState == PlayerMovement.state.Airborn)
             {
                 // > as the offset is negative
                 if (mainCam.transform.localPosition.y > maximumOffset)

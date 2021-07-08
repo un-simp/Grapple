@@ -37,12 +37,12 @@ namespace Wildflare.Player.Sounds
 
         void Update()
         {
-            if (movement.currentState == PlayerMovement.state.Walking)
+            if (PlayerMovement.currentState == PlayerMovement.state.Walking)
             {
                 windAS.volume = 0;
                 return;
             }
-            windAS.volume = (movement.currentVelocity - 12) / movement.absMaxVel * 0.05f / 2;
+            windAS.volume = (movement.currentVelocity - 12) / movement.absMaxVel * 0.05f;
         }
 
         public void PlayFootstepSound()

@@ -66,9 +66,9 @@ namespace Wildflare.Player.Movement
         //States
         public enum state
         {
-            Walking, Wallrunning, Airborn, Gliding, Grappling
+            Walking, Wallrunning, Airborn, Gliding, Grappling, Stopped
         }
-        [HideInInspector]public state currentState = state.Airborn;
+        public static state currentState = state.Airborn;
 
         void Awake()
         {
@@ -88,7 +88,7 @@ namespace Wildflare.Player.Movement
 
         private void FixedUpdate()
         {
-            if(!canMove) return;
+            if(!canMove || currentState == state.Stopped) return;
             
             //State Independant
             ClampVelocity();
@@ -127,7 +127,9 @@ namespace Wildflare.Player.Movement
             isGrounded = true;
             canJump = true;
             wallNormal = Vector3.zero;
-            graphics.SpawnGroundImpact(groundCheck.position, other.transform.GetComponent<Renderer>().material);
+            Renderer r;
+            if(other.gameObject.TryGetComponent(out r))
+                graphics.SpawnGroundImpact(groundCheck.position, other.transform.GetComponent<Renderer>().material);
             OnLanded.Invoke();
             camController.TweenTargetRot(0);
             combat.canLunge = true;
@@ -139,7 +141,7 @@ namespace Wildflare.Player.Movement
             if (isMoving)
             {
                 var dir = (orientation.forward * input.yInput + orientation.right * input.xInput).normalized;
-                rb.AddForce(dir * 3, ForceMode.Impulse);
+                rb.AddForce(dir * 7, ForceMode.Impulse);
             }
         }
         
@@ -250,7 +252,9 @@ namespace Wildflare.Player.Movement
                 if (dot < 0.7f)
                 {
                     currentState = state.Wallrunning;
-                    graphics.SpawnWallImpact(other.GetContact(0).point + wallNormal * 0.2f,
+                    Renderer r;
+                    if(other.gameObject.TryGetComponent(out r))
+                        graphics.SpawnWallImpact(other.GetContact(0).point + wallNormal * 0.2f,
                         other.transform.GetComponent<Renderer>().material, wallNormal);
                     OnLanded.Invoke();
                     if (Vector3.Dot(orientation.forward, wallTangent) < 0)
@@ -264,7 +268,6 @@ namespace Wildflare.Player.Movement
                     return;
                 }
             camController.TweenTargetRot(0);
-            //currentState = state.Walking;
         }
 
         private void WallRun()
@@ -314,12 +317,6 @@ namespace Wildflare.Player.Movement
             else
             {
                 StartWallrun(other);
-            }
-            
-            //Add force downwards to stop player bouncing
-            if (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl))
-            {
-                rb.AddForce(Vector3.down * 5, ForceMode.VelocityChange);
             }
         }
 

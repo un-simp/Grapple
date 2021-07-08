@@ -78,6 +78,7 @@ namespace Wildflare.Player.Graphics
 
         private void Update()
         {
+            if (PlayerMovement.currentState == PlayerMovement.state.Stopped) return;
             DrawRope();
             AlterSpeedlineOpacity();
             UpdateSpring();
@@ -86,7 +87,7 @@ namespace Wildflare.Player.Graphics
 
         private void AnimateSpear()
         {
-            if (movement.currentState == PlayerMovement.state.Walking)
+            if (PlayerMovement.currentState == PlayerMovement.state.Walking)
             {
                 spearAnim.speed = movement.currentVelocity / movement.maxVelocity;
             }
@@ -112,7 +113,7 @@ namespace Wildflare.Player.Graphics
 
         public void DrawRope()
         {
-            bool isGrappling = movement.currentState == PlayerMovement.state.Grappling;
+            bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (isGrappling) grapplePoint = lineEndTarget;
 
             hook.position = lineEnd.position + hook.up * 2.2f;
@@ -159,7 +160,7 @@ namespace Wildflare.Player.Graphics
 
         private void UpdateSpring()
         {
-            bool isGrappling = movement.currentState == PlayerMovement.state.Grappling;
+            bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (!isGrappling) spring.Reset();
 
             if (lr.positionCount == 2) spring.SetVelocity(speed);
@@ -178,6 +179,8 @@ namespace Wildflare.Player.Graphics
 
         public void SpawnParticle(RaycastHit hit)
         {
+            Renderer r;
+            if (!hit.transform.TryGetComponent(out r)) return;
             var hitMat = hit.transform.GetComponent<Renderer>().material;
             spearHitParticlesMat.color = hitMat.color;
             spearHitParticlesMat.mainTexture = hitMat.mainTexture != null ? hitMat.mainTexture : null;
@@ -189,9 +192,8 @@ namespace Wildflare.Player.Graphics
         {
             float opacity = 0;
             if (movement.currentVelocity > 20) opacity = (movement.currentVelocity - 20) / 20 - 0.2f;
-
-            speedlinesMat.color =
-                new Color(speedlinesMat.color.r, speedlinesMat.color.g, speedlinesMat.color.b, opacity);
+            
+            speedlinesMat.color = new Color(speedlinesMat.color.r, speedlinesMat.color.g, speedlinesMat.color.b, opacity);
             speedlines.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -40), new Vector3(0, 0, -16), opacity);
         }
 

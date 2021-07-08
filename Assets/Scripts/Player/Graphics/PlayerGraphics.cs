@@ -24,7 +24,7 @@ namespace Wildflare.Player.Graphics
         {
             float vel = new Vector3(movement.rb.velocity.x, 0, movement.rb.velocity.z).magnitude;
             velocityTxt.text = vel.ToString("F2");
-            stateTxt.text = "State: " + movement.currentState;
+            stateTxt.text = "State: " + PlayerMovement.currentState;
         }
 
         public void SpawnGroundImpact(Vector3 _position, Material _other)

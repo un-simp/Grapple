@@ -27,6 +27,7 @@ namespace Wildflare.Player.Attachments
 
         private void Update()
         {
+            if (PlayerMovement.currentState == PlayerMovement.state.Stopped) return;
             if (!canGlide)
             {
                 currentGlideTime += Time.deltaTime;
@@ -39,7 +40,7 @@ namespace Wildflare.Player.Attachments
             }
             
             //Start gliding if we press mouse 1 in the air.
-            if (movement.currentState == PlayerMovement.state.Airborn)
+            if (PlayerMovement.currentState == PlayerMovement.state.Airborn)
             {
                 if (Input.GetMouseButtonDown(1))
                 {
@@ -48,7 +49,7 @@ namespace Wildflare.Player.Attachments
             }
             
             //Stop Gliding If we release mouse 1
-            if (movement.currentState == PlayerMovement.state.Gliding)
+            if (PlayerMovement.currentState == PlayerMovement.state.Gliding)
             {
                 if (Input.GetMouseButtonUp(1))
                 {
@@ -59,7 +60,8 @@ namespace Wildflare.Player.Attachments
 
         private void FixedUpdate()
         {
-            if(movement.currentState != PlayerMovement.state.Gliding) return;
+            if (PlayerMovement.currentState == PlayerMovement.state.Stopped) return;
+            if(PlayerMovement.currentState != PlayerMovement.state.Gliding) return;
             if (currentGlideTime > 0)
             {
                 DoGliding();
@@ -74,7 +76,7 @@ namespace Wildflare.Player.Attachments
         void StartGliding()
         {
             IsGliding = true;
-            movement.currentState = PlayerMovement.state.Gliding;
+            PlayerMovement.currentState = PlayerMovement.state.Gliding;
             graphics.StartGliding();
         }
 
@@ -90,8 +92,8 @@ namespace Wildflare.Player.Attachments
             canGlide = false;
             currentGlideTime = 0;
             graphics.StopGliding();
-            if(movement.currentState == PlayerMovement.state.Gliding)
-                movement.currentState = PlayerMovement.state.Airborn;
+            if(PlayerMovement.currentState == PlayerMovement.state.Gliding)
+                PlayerMovement.currentState = PlayerMovement.state.Airborn;
         }
 
         private void OnCollisionEnter(Collision other)

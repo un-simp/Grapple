@@ -30,7 +30,7 @@ namespace Wildflare.Player.Combat
         void Update()
         {
             //If gliding or grappling then we can't lunge
-            if (movement.currentState == PlayerMovement.state.Grappling || movement.currentState == PlayerMovement.state.Gliding)
+            if (PlayerMovement.currentState == PlayerMovement.state.Grappling || PlayerMovement.currentState == PlayerMovement.state.Gliding)
             {
                 spear.localPosition = Vector3.zero;
                 return;
@@ -46,7 +46,7 @@ namespace Wildflare.Player.Combat
         {
             movement.rb.AddForce(movement.orientation.forward * lungeForce, ForceMode.VelocityChange);
             movement.rb.AddForce(Vector3.up * lungeForce / 10, ForceMode.VelocityChange);
-            movement.maxVelocity += 2;
+            movement.maxVelocity += 4;
             camController.ShakeLunge();
             LungeAnimation();
             sounds.PlayLunge();
