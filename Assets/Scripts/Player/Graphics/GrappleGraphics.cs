@@ -1,10 +1,10 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using Wildflare.Player.Attachments;
-using Wildflare.Player.Movement;
+using Barji.Player.Attachments;
+using Barji.Player.Movement;
 
-namespace Wildflare.Player.Graphics
+namespace Barji.Player.Graphics
 {
     public class GrappleGraphics : MonoBehaviour
     {
@@ -13,12 +13,11 @@ namespace Wildflare.Player.Graphics
         [SerializeField] private Material lineMaterial;
         [SerializeField] private Transform hookStart;
         [SerializeField] private Transform lineEnd;
-        [SerializeField] private Sway sway;
         [SerializeField] private Transform spearOrientation;
         [SerializeField] private GameObject spearHitParticles;
         [SerializeField] private Material spearHitParticlesMat;
-        [SerializeField] private Animator spearAnim;
-
+        [SerializeField] private Sway sway;
+        [SerializeField] private Transform spearMesh;
         public Transform hook;
 
         public Image crosshair;
@@ -82,31 +81,15 @@ namespace Wildflare.Player.Graphics
             DrawRope();
             AlterSpeedlineOpacity();
             UpdateSpring();
-            AnimateSpear();
-        }
-
-        private void AnimateSpear()
-        {
-            if (PlayerMovement.currentState == PlayerMovement.state.Walking)
-            {
-                spearAnim.speed = movement.currentVelocity / movement.maxVelocity;
-            }
-            else if(spearAnim.speed != 0)
-            {
-                spearAnim.speed = 0;
-            }
         }
 
 
         public void StartGrapple(RaycastHit _hitInfo)
         {
-            ChangeGrappleRenderLayer(0);
-            hook.parent = movement.cam.transform.parent;
-
-            lineEnd.parent = movement.cam.transform.parent;
-
             sway.enabled = false;
-
+            hook.parent = null;
+            ChangeGrappleRenderLayer("Default");
+            lineEnd.parent = movement.cam.transform.parent;
             lineEndTarget = _hitInfo.point;
             inverseHitNormal = (_hitInfo.point - movement.transform.position).normalized;
         }
@@ -116,7 +99,7 @@ namespace Wildflare.Player.Graphics
             bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (isGrappling) grapplePoint = lineEndTarget;
 
-            hook.position = lineEnd.position + hook.up * 2.2f;
+            hook.position = lineEnd.position + hook.up * 2.85f;
 
             if (lr.positionCount > 2 && !isGrappling) lr.positionCount = 2;
 
@@ -155,7 +138,8 @@ namespace Wildflare.Player.Graphics
             hook.parent = cam;
             lineEnd.parent = cam;
             LineDismantle();
-            ChangeGrappleRenderLayer(7);
+            ChangeGrappleRenderLayer("SecondCam");
+            sway.enabled = true;
         }
 
         private void UpdateSpring()
@@ -173,7 +157,6 @@ namespace Wildflare.Player.Graphics
         public void LineDismantle()
         {
             hook.localRotation = spearOrientation.localRotation;
-            sway.enabled = true;
             inverseHitNormal = Vector3.zero;
         }
 
@@ -197,14 +180,27 @@ namespace Wildflare.Player.Graphics
             speedlines.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -40), new Vector3(0, 0, -16), opacity);
         }
 
-        void ChangeGrappleRenderLayer(int desiredLayer)
+        void ChangeGrappleRenderLayer(string desiredLayer)
         {
             //Get all renderers in spear mesh and change layers
-            Transform spearMesh = hook.GetChild(0);
             foreach (Transform child in spearMesh)
             {
-                child.gameObject.layer = desiredLayer;
+                child.gameObject.layer = LayerMask.NameToLayer(desiredLayer);;
             }
+        }
+
+        public void OffsetSpearPos()
+        {
+            sway.enabled = false;
+            spearMesh.DOKill(true);
+            spearMesh.DOLocalMoveZ(0.5f, 0.2f);
+        }
+
+        public void ResetSpearPos()
+        {
+            spearMesh.DOKill(true);
+            spearMesh.DOLocalMoveZ(0.261f, 0.2f);
+            sway.enabled = true;
         }
     }
 }

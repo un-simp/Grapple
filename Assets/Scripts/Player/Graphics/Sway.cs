@@ -1,7 +1,7 @@
 using UnityEngine;
-using Wildflare.Player.Inputs;
+using Barji.Player.Inputs;
 
-namespace Wildflare.Player.Graphics
+namespace Barji.Player.Graphics
 {
     public class Sway : MonoBehaviour
     {

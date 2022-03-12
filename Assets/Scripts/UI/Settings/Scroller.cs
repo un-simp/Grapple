@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Wildflare.UI.Interfaces;
+using Barji.UI.Interfaces;
 
-namespace Wildflare.UI.Settings
+namespace Barji.UI.Settings
 {
     public class Scroller : MonoBehaviour
     {

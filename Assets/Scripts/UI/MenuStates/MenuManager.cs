@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Wildflare.UI.MenuStates
+namespace Barji.UI.MenuStates
 {
     public class MenuManager : StateMachine
     {

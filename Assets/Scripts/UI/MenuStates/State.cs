@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Wildflare.UI.MenuStates
+namespace Barji.UI.MenuStates
 {
     public abstract class State
     {

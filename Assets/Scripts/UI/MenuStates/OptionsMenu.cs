@@ -2,7 +2,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-namespace Wildflare.UI.MenuStates
+namespace Barji.UI.MenuStates
 {
     public class OptionsMenu : State
     {

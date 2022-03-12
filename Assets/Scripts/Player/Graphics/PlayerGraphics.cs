@@ -1,9 +1,9 @@
 ﻿using TMPro;
 using UnityEngine;
-using Wildflare.Player.Cam;
-using Wildflare.Player.Movement;
+using Barji.Player.Cam;
+using Barji.Player.Movement;
 
-namespace Wildflare.Player.Graphics
+namespace Barji.Player.Graphics
 {
     public class PlayerGraphics : MonoBehaviour
     {

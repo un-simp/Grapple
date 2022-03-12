@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.Audio;
-using Wildflare.Audio;
-using Wildflare.UI;
+using Barji.Audio;
+using Barji.UI;
 
-namespace Wildflare.Sounds
+namespace Barji.Sounds
 {
     [RequireComponent(typeof(UIAnimator))]
     public class UISounds : MonoBehaviour

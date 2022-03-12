@@ -17,4 +17,8 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Networked.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  m_configObjects: {}
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 8029313430926e64fa07ac79ea248133, type: 2}
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 0031c9096beeb794bae8131065b84134, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 618aa626a3c83924fbe1a9ca26da5dfe, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: f98939e0092dc2a47819a6c55528e7da, type: 2}

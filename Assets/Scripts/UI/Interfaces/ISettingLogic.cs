@@ -1,4 +1,4 @@
-﻿namespace Wildflare.UI.Interfaces
+﻿namespace Barji.UI.Interfaces
 {
     public interface ISettingLogic
     {

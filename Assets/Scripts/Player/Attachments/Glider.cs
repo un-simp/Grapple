@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Wildflare.Player.Graphics;
-using Wildflare.Player.Movement;
+using Barji.Player.Graphics;
+using Barji.Player.Movement;
 
-namespace Wildflare.Player.Attachments
+namespace Barji.Player.Attachments
 {
     public class Glider : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Wildflare
+namespace Barji
 {
     public class RendererStore : MonoBehaviour
     {

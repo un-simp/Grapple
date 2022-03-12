@@ -1,11 +1,12 @@
 ﻿using DG.Tweening;
 using UnityEngine;
-using Wildflare.Player.Movement;
+using Barji.Player.Movement;
 using MilkShake;
 using UnityEngine.Serialization;
-using Wildflare.UI.Settings;
+using Barji.UI.Settings;
+using Valve.VR;
 
-namespace Wildflare.Player.Cam
+namespace Barji.Player.Cam
 {
     public class CameraController : MonoBehaviour
     {
@@ -30,6 +31,8 @@ namespace Wildflare.Player.Cam
 
         [SerializeField] private Vector2 sensitivity;
         private float sensitivityMultiplier;
+
+        public bool VRPlayer;
         private void Awake()
         {
             SettingsManager.onSensitivityChanged += SetSensitivityMultiplier;
@@ -45,15 +48,14 @@ namespace Wildflare.Player.Cam
 
         private void Update()
         {
-
             mouseX = Input.GetAxis("Mouse X") * sensitivity.x * sensitivityMultiplier * Time.fixedDeltaTime;
             mouseY = Input.GetAxis("Mouse Y") * sensitivity.y * sensitivityMultiplier * Time.fixedDeltaTime;
         }
 
         private void LateUpdate()
         {
-
-            Rotation();
+            if(!VRPlayer)
+                Rotation();
             CursorManager();
             CameraFall();
         }

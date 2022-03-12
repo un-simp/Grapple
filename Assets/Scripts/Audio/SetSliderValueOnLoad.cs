@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Wildflare.UI.Settings;
+using Barji.UI.Settings;
 
-namespace Wildflare.Audio
+namespace Barji.Audio
 {
     public class SetSliderValueOnLoad : MonoBehaviour
     {

@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using Wildflare.Player.Cam;
-using Wildflare.Player.Graphics;
-using Wildflare.Player.Movement;
-using Wildflare.Player.Sounds;
+using Barji.Player.Cam;
+using Barji.Player.Graphics;
+using Barji.Player.Movement;
+using Barji.Player.Sounds;
 
-namespace Wildflare.Player.Attachments
+namespace Barji.Player.Attachments
 {
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(GrappleGraphics))]

@@ -1,7 +1,7 @@
 using UnityEngine;
-using Wildflare.Player.Movement;
+using Barji.Player.Movement;
 
-namespace Wildflare.Player.Inputs
+namespace Barji.Player.Inputs
 {
     public class PlayerInput : MonoBehaviour
     {

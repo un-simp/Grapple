@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Wildflare.UI.Interfaces;
-using Wildflare.UI.Settings;
+using Barji.UI.Interfaces;
+using Barji.UI.Settings;
 
-namespace Wildflare
+namespace Barji
 {
     public class Selector : MonoBehaviour
     {

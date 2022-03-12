@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Wildflare.Services;
+using Barji.Services;
 
-namespace Wildflare
+namespace Barji
 {
     public class ResetOnCollision : MonoBehaviour
     {

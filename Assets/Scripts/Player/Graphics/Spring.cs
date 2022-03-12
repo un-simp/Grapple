@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Wildflare.Player.Graphics
+namespace Barji.Player.Graphics
 {
     public class Spring
     {

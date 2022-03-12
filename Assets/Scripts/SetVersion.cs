@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace Wildflare
+namespace Barji
 {
     [ExecuteAlways]
     public class SetVersion : MonoBehaviour

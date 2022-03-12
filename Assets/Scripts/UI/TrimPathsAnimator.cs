@@ -1,9 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI.ProceduralImage;
-using Wildflare.Sounds;
+using Barji.Sounds;
 
-namespace Wildflare.UI
+namespace Barji.UI
 {
     [RequireComponent(typeof(UISounds))]
     public class TrimPathsAnimator : MonoBehaviour

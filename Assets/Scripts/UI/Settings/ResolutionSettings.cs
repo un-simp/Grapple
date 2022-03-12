@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using Wildflare.UI.Interfaces;
+using Barji.UI.Interfaces;
 using System;
 
-namespace Wildflare.UI.Settings
+namespace Barji.UI.Settings
 {
     public class ResolutionSettings : MonoBehaviour, ISettingLogic
     {

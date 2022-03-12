@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using Wildflare.UI.Interfaces;
+using Barji.UI.Interfaces;
 
-namespace Wildflare.UI.Settings
+namespace Barji.UI.Settings
 {
     public class FullscreenSettings : MonoBehaviour, ISettingLogic
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Wildflare
+namespace Barji
 {
     public class LoadScene : MonoBehaviour
     {

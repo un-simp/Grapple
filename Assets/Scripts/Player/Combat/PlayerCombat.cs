@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using Wildflare.Player.Cam;
-using Wildflare.Player.Inputs;
-using Wildflare.Player.Movement;
-using Wildflare.Player.Sounds;
+using Barji.Player.Cam;
+using Barji.Player.Inputs;
+using Barji.Player.Movement;
+using Barji.Player.Sounds;
 
-namespace Wildflare.Player.Combat
+namespace Barji.Player.Combat
 {
     public class PlayerCombat : MonoBehaviour
     {
@@ -31,10 +31,7 @@ namespace Wildflare.Player.Combat
         {
             //If gliding or grappling then we can't lunge
             if (PlayerMovement.currentState == PlayerMovement.state.Grappling || PlayerMovement.currentState == PlayerMovement.state.Gliding)
-            {
-                spear.localPosition = Vector3.zero;
                 return;
-            }
 
             if (Input.GetKeyDown(KeyCode.LeftShift) && canLunge)
             {
@@ -57,7 +54,7 @@ namespace Wildflare.Player.Combat
         {
             //spear.localPosition = new Vector3(spear.localPosition.x, 0, spear.position.z);
             float spearPosY = spear.transform.localPosition.y;
-            var tween = spear.transform.DOLocalMoveY(spearPosY + 0.5f, 0.1f);
+            spear.transform.DOPunchPosition(Vector3.up, 0.1f);
         }
     }
 }

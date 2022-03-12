@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Wildflare.Player.Interfaces
+namespace Barji.Player.Interfaces
 {
     public interface IAnimatable
     {

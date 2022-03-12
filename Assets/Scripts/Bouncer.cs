@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Wildflare.UI.Settings;
+using Barji.UI.Settings;
 
-namespace Wildflare
+namespace Barji
 {
     public class Bouncer : MonoBehaviour
     {

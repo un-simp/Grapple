@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
-using Wildflare.Player.Combat;
+using Barji.Player.Combat;
 using DG.Tweening;
 using UnityEngine;
-using Wildflare.Player.Cam;
-using Wildflare.Player.Graphics;
-using Wildflare.Player.Inputs;
+using Barji.Player.Cam;
+using Barji.Player.Graphics;
+using Barji.Player.Inputs;
 
-namespace Wildflare.Player.Movement
+namespace Barji.Player.Movement
 {
     [RequireComponent(typeof(PlayerInput))]
     public class PlayerMovement : MonoBehaviour
@@ -314,7 +314,7 @@ namespace Wildflare.Player.Movement
                 StartWalking(other);
             }
             //If we hit a wall then start wallrunning
-            else
+            else if(currentState != state.Grappling)
             {
                 StartWallrun(other);
             }
@@ -385,7 +385,7 @@ namespace Wildflare.Player.Movement
             }
             
             //Handle any anomolies (If any modders are reading this I understand your frustration, just know this was a last ditch effort lmao)
-            if(!rayHitGround)
+            if(!rayHitGround && currentState != state.Grappling)
                 currentState = state.Airborn;
         }
 
@@ -406,7 +406,7 @@ namespace Wildflare.Player.Movement
         public void HandleFOV(float _desiredFOV)
         {
             cam.DOFieldOfView(_desiredFOV, 0.5f);
-            overlayCam.DOFieldOfView(_desiredFOV, 0.5f);
+            overlayCam.DOFieldOfView(_desiredFOV + 20, 0.5f);
         }
 
         #endregion

@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Wildflare.UI.Settings;
+using Barji.UI.Settings;
 
-namespace Wildflare.Audio
+namespace Barji.Audio
 {
     public class AudioManager : MonoBehaviour
     {

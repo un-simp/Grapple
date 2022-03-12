@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Wildflare.UI.Settings
+namespace Barji.UI.Settings
 {
     public static class SettingsManager
     {

@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Wildflare.UI.MenuStates
+namespace Barji.UI.MenuStates
 {
     public class LevelMenu : State
     {

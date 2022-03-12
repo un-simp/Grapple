@@ -4,14 +4,14 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Wildflare.UI.Settings;
+using Barji.UI.Settings;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Wildflare.Audio;
-using Wildflare.Player.Movement;
+using Barji.Audio;
+using Barji.Player.Movement;
 
 
-namespace Wildflare.Services
+namespace Barji.Services
 {
     public class GameplayManager : MonoBehaviour
     {

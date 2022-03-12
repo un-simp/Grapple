@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Wildflare.UI
+namespace Barji.UI
 {
     [RequireComponent(typeof(EventTrigger))]
     public class UIAnimator : MonoBehaviour

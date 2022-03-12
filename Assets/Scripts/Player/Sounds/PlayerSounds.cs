@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Wildflare.Player.Movement;
+using Barji.Player.Movement;
 using Random = UnityEngine.Random;
 
-namespace Wildflare.Player.Sounds
+namespace Barji.Player.Sounds
 {
     public class PlayerSounds : MonoBehaviour
     {
