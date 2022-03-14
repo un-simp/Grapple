@@ -62,17 +62,17 @@ namespace Valve.VR.InteractionSystem
         const int wristBone = SteamVR_Skeleton_JointIndexes.wrist;
         const int rootBone = SteamVR_Skeleton_JointIndexes.root;
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             if (hand.skeleton == null) return;
             initialized = true;
 
             UpdateCenterPoint();
 
-            handCollider.MoveTo(targetPosition, targetRotation);
+            //handCollider.MoveTo(targetPosition, targetRotation);
 
-            if ((handCollider.transform.position - targetPosition).sqrMagnitude > handResetDistance * handResetDistance)
-                handCollider.TeleportTo(targetPosition, targetRotation);
+            //if ((handCollider.transform.position - targetPosition).sqrMagnitude > handResetDistance * handResetDistance)
+            handCollider.TeleportTo(targetPosition, targetRotation);
 
             UpdateFingertips();
         }
@@ -197,7 +197,7 @@ namespace Valve.VR.InteractionSystem
 
             Vector3 offsetPosition = handCollider.transform.TransformPoint(wristToArmature.inverse.MultiplyPoint3x4(Vector3.zero));
 
-            hand.mainRenderModel.transform.position = offsetPosition;
+            //hand.mainRenderModel.transform.position = offsetPosition;
 
             /*
             Vector3 wristPointInArmatureSpace = transform.InverseTransformPoint(handCollider.transform.position);

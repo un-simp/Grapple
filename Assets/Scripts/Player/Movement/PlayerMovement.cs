@@ -70,20 +70,33 @@ namespace Barji.Player.Movement
         }
         public static state currentState = state.Airborn;
 
+        public bool isVR;
+
+
         void Awake()
         {
+            if(!isVR)
+            {
+                camController = GetComponent<CameraController>();
+                combat = GetComponent<PlayerCombat>();
+                overlayCam = cam.transform.GetChild(0).GetComponent<Camera>();
+
+            }
             rb = GetComponent<Rigidbody>();
             input = GetComponent<PlayerInput>();
-            camController = GetComponent<CameraController>();
             graphics = GetComponent<PlayerGraphics>();
-            combat = GetComponent<PlayerCombat>();
-            overlayCam = cam.transform.GetChild(0).GetComponent<Camera>();
             collider = GetComponent<CapsuleCollider>();
             maxVelocityOnStart = maxVelocity;
             speedOnStart = speed;
             FOV = cam.fieldOfView;
             canMove = true;
             currentState = state.Airborn;
+        }
+
+        void LateUpdate()
+        {
+            if(isVR)
+                orientation.eulerAngles = new Vector3(0, orientation.eulerAngles.y, orientation.eulerAngles.z);
         }
 
         private void FixedUpdate()
@@ -107,6 +120,7 @@ namespace Barji.Player.Movement
                     Gravity();
                     break;
                 case state.Wallrunning:
+                    if(isVR) return;
                     WallRun();
                     JumpHandler();
                     Gravity(); Gravity(); //Double Gravity
@@ -130,9 +144,14 @@ namespace Barji.Player.Movement
             Renderer r;
             if(other.gameObject.TryGetComponent(out r))
                 graphics.SpawnGroundImpact(groundCheck.position, other.transform.GetComponent<Renderer>().material);
+            
             OnLanded.Invoke();
-            camController.TweenTargetRot(0);
-            combat.canLunge = true;
+            if(!isVR)
+            {
+                camController.TweenTargetRot(0);
+                combat.canLunge = true;
+            }
+            
             currentState = state.Walking;
             StopCoroutine(nameof(Footstep));
             StartCoroutine(nameof(Footstep));
@@ -259,15 +278,18 @@ namespace Barji.Player.Movement
                     OnLanded.Invoke();
                     if (Vector3.Dot(orientation.forward, wallTangent) < 0)
                     {
-                        camController.TweenTargetRot(15);
+                        if(!isVR)
+                            camController.TweenTargetRot(15);
                         return;
                     }
 
                     if (wallNormal - Vector3.up != Vector3.zero)
-                        camController.TweenTargetRot(-15);
+                        if(!isVR)
+                            camController.TweenTargetRot(-15);
                     return;
                 }
-            camController.TweenTargetRot(0);
+            if(!isVR)
+                camController.TweenTargetRot(0);
         }
 
         private void WallRun()
@@ -363,7 +385,8 @@ namespace Barji.Player.Movement
             //Stop wallrunning
             if (currentState == state.Wallrunning)
             {
-                camController.TweenTargetRot(0);
+                if(!isVR)
+                    camController.TweenTargetRot(0);
                 if (rayHitGround)
                 {
                     currentState = state.Walking;

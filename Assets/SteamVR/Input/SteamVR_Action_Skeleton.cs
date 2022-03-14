@@ -78,6 +78,7 @@ namespace Valve.VR
         /// Update a transform's local position and local roation to match the pose from the most recent update
         /// </summary>
         /// <param name="transformToUpdate">The transform of the object to be updated</param>
+
         public void UpdateTransform(Transform transformToUpdate)
         {
             base.UpdateTransform(SteamVR_Input_Sources.Any, transformToUpdate);

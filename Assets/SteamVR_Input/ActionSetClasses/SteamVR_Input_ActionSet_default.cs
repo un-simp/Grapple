@@ -73,7 +73,7 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Single Squeeze
+        public virtual SteamVR_Action_Boolean Squeeze
         {
             get
             {
@@ -110,6 +110,30 @@ namespace Valve.VR
             get
             {
                 return SteamVR_Actions.default_Touchpad;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean Jump
+        {
+            get
+            {
+                return SteamVR_Actions.default_Jump;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean TriggerRight
+        {
+            get
+            {
+                return SteamVR_Actions.default_TriggerRight;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean TriggerLeft
+        {
+            get
+            {
+                return SteamVR_Actions.default_TriggerLeft;
             }
         }
         

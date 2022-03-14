@@ -18,7 +18,7 @@ namespace Barji.Player.Graphics
         [SerializeField] private Material spearHitParticlesMat;
         [SerializeField] private Sway sway;
         [SerializeField] private Transform spearMesh;
-        public Transform hook;
+        public Transform spear;
 
         public Image crosshair;
 
@@ -48,7 +48,14 @@ namespace Barji.Player.Graphics
         private bool showUI;
         private Spring spring;
 
-        private Transform transformOnStart;
+        private Vector3 spearStartPosition;
+        private Quaternion spearMeshStartRot;
+        private Vector3 spearStartRot;
+        private Transform spearParentOnStart;
+
+        [Header("VR")]
+        [SerializeField] private LineRenderer rayGuide;
+
 
         private void Awake()
         {
@@ -59,7 +66,14 @@ namespace Barji.Player.Graphics
             spring = new Spring();
             spring.SetTarget(0);
 
-            transformOnStart = transform;
+
+            spearStartPosition = spear.localPosition;
+            spearParentOnStart = spear.parent;
+            spearMeshStartRot = spearMesh.transform.localRotation;
+            spearStartRot = spear.localEulerAngles;
+
+            if(movement.isVR)
+                rayGuide.positionCount = 2;
         }
 
         private void Start()
@@ -72,26 +86,33 @@ namespace Barji.Player.Graphics
             lr.useWorldSpace = true;
             lr.positionCount = 2;
 
-            crosshairScaleOnStart = crosshair.transform.localScale;
+            if(!movement.isVR)
+                crosshairScaleOnStart = crosshair.transform.localScale;
         }
 
         private void Update()
         {
             if (PlayerMovement.currentState == PlayerMovement.state.Stopped) return;
-            DrawRope();
             AlterSpeedlineOpacity();
             UpdateSpring();
+        }
+
+        void LateUpdate()
+        {
+            if (PlayerMovement.currentState == PlayerMovement.state.Stopped) return;
+            DrawRope();
         }
 
 
         public void StartGrapple(RaycastHit _hitInfo)
         {
-            sway.enabled = false;
-            hook.parent = null;
+            if(!movement.isVR)
+                sway.enabled = false;
+            spear.parent = null;
             ChangeGrappleRenderLayer("Default");
             lineEnd.parent = movement.cam.transform.parent;
             lineEndTarget = _hitInfo.point;
-            inverseHitNormal = (_hitInfo.point - movement.transform.position).normalized;
+            inverseHitNormal = (_hitInfo.point - hookStart.transform.position).normalized;
         }
 
         public void DrawRope()
@@ -99,7 +120,36 @@ namespace Barji.Player.Graphics
             bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (isGrappling) grapplePoint = lineEndTarget;
 
-            hook.position = lineEnd.position + hook.up * 2.85f;
+            if(isGrappling || grappleTime > 0.01f)
+            {
+                spear.position = lineEnd.position;
+                if(isGrappling)
+                    spearMesh.up = inverseHitNormal;
+                else if (movement.isVR)
+                {
+                    spear.localRotation = Quaternion.Lerp(spear.localRotation, Quaternion.identity, Time.deltaTime * 8);
+                    spearMesh.localRotation = Quaternion.Lerp(spearMesh.localRotation, spearMeshStartRot, Time.deltaTime * 8);
+                }
+                else
+                {
+                    spear.localRotation = Quaternion.Lerp(spear.localRotation, Quaternion.Euler(spearStartRot), Time.deltaTime * 8);
+                    spearMesh.localRotation = Quaternion.Lerp(spearMesh.localRotation, spearMeshStartRot, Time.deltaTime * 8);
+                }
+            }
+            else
+            {   
+                if(movement.isVR)
+                {
+                    spear.localPosition = Vector3.zero;
+                    spear.localEulerAngles = Vector3.zero;
+                }
+                else
+                {
+                    spear.localPosition = spearStartPosition;
+                    spear.localEulerAngles = spearStartRot;
+                }
+                spearMesh.localRotation = spearMeshStartRot;
+            }
 
             if (lr.positionCount > 2 && !isGrappling) lr.positionCount = 2;
 
@@ -125,21 +175,20 @@ namespace Barji.Player.Graphics
             {
                 var delta = i / (float) resolution;
                 var offset = up * (waveHeight * Mathf.Sin(delta * waveCount * Mathf.PI) * spring.Value * affectCurve.Evaluate(delta));
-                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position + hook.up * .5f, delta) + offset);
+                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position + spear.up * .5f, delta) + offset);
             }
-
-            hook.up = inverseHitNormal;
         }
 
         public void StopGrapple()
         {
             lineEndTarget = hookStart.position;
             var cam = movement.cam.transform;
-            hook.parent = cam;
+            spear.parent = spearParentOnStart;
             lineEnd.parent = cam;
             LineDismantle();
             ChangeGrappleRenderLayer("SecondCam");
-            sway.enabled = true;
+            if(!movement.isVR)
+                sway.enabled = true;
         }
 
         private void UpdateSpring()
@@ -156,7 +205,7 @@ namespace Barji.Player.Graphics
 
         public void LineDismantle()
         {
-            hook.localRotation = spearOrientation.localRotation;
+            spear.localRotation = spearOrientation.localRotation;
             inverseHitNormal = Vector3.zero;
         }
 
@@ -191,7 +240,8 @@ namespace Barji.Player.Graphics
 
         public void OffsetSpearPos()
         {
-            sway.enabled = false;
+            if(!movement.isVR)
+                sway.enabled = false;
             spearMesh.DOKill(true);
             spearMesh.DOLocalMoveZ(0.5f, 0.2f);
         }
@@ -200,7 +250,16 @@ namespace Barji.Player.Graphics
         {
             spearMesh.DOKill(true);
             spearMesh.DOLocalMoveZ(0.261f, 0.2f);
-            sway.enabled = true;
+            if(!movement.isVR)
+                sway.enabled = true;
+        }
+
+        public void DrawGuide(Vector3 startPoint, Vector3 endPoint, float opacity)
+        {
+            rayGuide.SetPosition(0, startPoint);
+            rayGuide.SetPosition(1, endPoint);
+            rayGuide.startColor = new Color(rayGuide.startColor.r, rayGuide.startColor.g, rayGuide.startColor.b, opacity);
+            rayGuide.endColor = new Color(rayGuide.startColor.r, rayGuide.startColor.g, rayGuide.startColor.b, opacity);
         }
     }
 }

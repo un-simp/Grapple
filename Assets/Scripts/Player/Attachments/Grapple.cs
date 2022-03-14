@@ -4,6 +4,7 @@ using Barji.Player.Cam;
 using Barji.Player.Graphics;
 using Barji.Player.Movement;
 using Barji.Player.Sounds;
+using Barji.Player.Inputs;
 
 namespace Barji.Player.Attachments
 {
@@ -26,9 +27,15 @@ namespace Barji.Player.Attachments
         public RaycastHit hitInfo;
 
         [SerializeField] private PlayerSounds sounds;
+        [SerializeField] private PlayerInput input;
         private SpringJoint joint;
         private PlayerMovement movement;
         private Rigidbody rb;
+
+        [Header("VR")]
+        [SerializeField] private Transform activeHand;
+        [SerializeField] private Transform leftHand;
+        [SerializeField] private Transform rightHand;
 
 
         private void Awake()
@@ -36,6 +43,7 @@ namespace Barji.Player.Attachments
             movement = GetComponent<PlayerMovement>();
             graphics = GetComponent<GrappleGraphics>();
             rb = GetComponent<Rigidbody>();
+        
         }
 
         private void Update()
@@ -54,13 +62,40 @@ namespace Barji.Player.Attachments
         private void GrappleManager()
         {
             bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
-            if (Input.GetKey(KeyCode.Mouse0) && !isGrappling && CanGrapple())
+
+            if(movement.isVR)
+            {
+                if(!isGrappling)
+                {
+                    if(input.switchRight)
+                    {
+                        activeHand.parent.parent = rightHand;
+                        activeHand.parent.localPosition = Vector3.zero;
+                        activeHand.parent.localEulerAngles = Vector3.zero;
+                    }
+                    else if(input.switchLeft)
+                    {
+                        activeHand.parent.parent = leftHand;
+                        activeHand.parent.localPosition = Vector3.zero;
+                        activeHand.parent.localEulerAngles = Vector3.zero;
+                    }   
+                }
+
+                if(input.grappling)
+                    graphics.DrawGuide(activeHand.position, activeHand.position + (activeHand.forward * grappleRange), 1);
+                else
+                    graphics.DrawGuide(activeHand.position, activeHand.position + (activeHand.forward * grappleRange), 0);
+                
+            }
+            
+
+            if (input.grappling && !isGrappling && CanGrapple())
             {
                 PlayerMovement.currentState = PlayerMovement.state.Grappling;
                 InstantStart();
             }
                 
-            else if (Input.GetKeyUp(KeyCode.Mouse0) && isGrappling)
+            else if (input.stopGrapple && isGrappling)
             {
                 InstantStop();
                 if (movement.rayHitGround)
@@ -85,10 +120,14 @@ namespace Barji.Player.Attachments
 
         private void StartGrapple()
         {
-            GetComponent<CameraController>().TweenTargetRot(0);
-            var glider = GetComponent<Glider>();
-            if (glider.IsGliding)
-                glider.StopGliding();
+            if(!movement.isVR)
+            {
+                GetComponent<CameraController>().TweenTargetRot(0);
+                var glider = GetComponent<Glider>();
+                if (glider.IsGliding)
+                    glider.StopGliding();
+            } //TODO: move glider code out
+            
             joint = gameObject.AddComponent<SpringJoint>();
 
             joint.autoConfigureConnectedAnchor = false;
@@ -132,7 +171,22 @@ namespace Barji.Player.Attachments
         public bool CanGrapple()
         {
             RaycastHit hit;
-            var Raycast = Physics.Raycast(movement.cam.transform.position, movement.cam.transform.forward, out hit, grappleRange);
+
+            Vector3 rayOrigin;
+            Vector3 rayDirection;
+
+            if(movement.isVR)
+            {
+                rayOrigin = activeHand.position;
+                rayDirection = activeHand.forward;
+            }
+            else
+            {
+                rayOrigin = movement.cam.transform.position;
+                rayDirection = movement.cam.transform.forward;
+            }
+
+            var Raycast = Physics.Raycast(rayOrigin, rayDirection, out hit, grappleRange);
             bool isGrappling = PlayerMovement.currentState == PlayerMovement.state.Grappling;
             if (Raycast && !isGrappling)
             {

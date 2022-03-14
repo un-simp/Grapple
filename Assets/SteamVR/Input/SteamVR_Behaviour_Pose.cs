@@ -120,6 +120,7 @@ namespace Valve.VR
             if (onTransformUpdatedEvent != null)
                 onTransformUpdatedEvent.Invoke(this, inputSource);
         }
+
         protected virtual void UpdateTransform()
         {
             CheckDeviceIndex();
