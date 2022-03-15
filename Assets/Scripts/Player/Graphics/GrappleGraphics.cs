@@ -121,10 +121,13 @@ namespace Barji.Player.Graphics
             if (isGrappling) grapplePoint = lineEndTarget;
 
             if(isGrappling || grappleTime > 0.01f)
-            {
+            {       
                 spear.position = lineEnd.position;
                 if(isGrappling)
+                {
+                    spear.position = grapplePoint;
                     spearMesh.up = inverseHitNormal;
+                }
                 else if (movement.isVR)
                 {
                     spear.localRotation = Quaternion.Lerp(spear.localRotation, Quaternion.identity, Time.deltaTime * 8);
@@ -133,7 +136,7 @@ namespace Barji.Player.Graphics
                 else
                 {
                     spear.localRotation = Quaternion.Lerp(spear.localRotation, Quaternion.Euler(spearStartRot), Time.deltaTime * 8);
-                    spearMesh.localRotation = Quaternion.Lerp(spearMesh.localRotation, spearMeshStartRot, Time.deltaTime * 8);
+                    //spearMesh.localRotation = Quaternion.Lerp(spearMesh.localRotation, spearMeshStartRot, Time.deltaTime * 8);
                 }
             }
             else
@@ -153,29 +156,27 @@ namespace Barji.Player.Graphics
 
             if (lr.positionCount > 2 && !isGrappling) lr.positionCount = 2;
 
-            var gunTip = hookStart.position;
-
             grappleTime = Mathf.Lerp(grappleTime, isGrappling ? 1f : 0, Time.deltaTime * 15f);
-            lineEnd.position = Vector3.Lerp(gunTip, grapplePoint - inverseHitNormal * 2.2f, grappleTime);
+            lineEnd.position = Vector3.Lerp(hookStart.position, grapplePoint - inverseHitNormal * 2.2f, grappleTime);
 
             lr.enabled = grappleTime > 0.01f;
 
             if (!isGrappling)
             {
-                lr.SetPosition(0, gunTip);
+                lr.SetPosition(0, hookStart.position);
                 lr.SetPosition(1, lineEnd.position);
                 return;
             }
 
             if (lr.positionCount == 2) lr.positionCount = resolution + 1;
 
-            var up = Quaternion.LookRotation((grapplePoint - gunTip).normalized) * Vector3.up;
+            var up = Quaternion.LookRotation((grapplePoint - hookStart.position).normalized) * Vector3.up;
 
             for (var i = 0; i < resolution + 1; i++)
             {
                 var delta = i / (float) resolution;
                 var offset = up * (waveHeight * Mathf.Sin(delta * waveCount * Mathf.PI) * spring.Value * affectCurve.Evaluate(delta));
-                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position + spear.up * .5f, delta) + offset);
+                lr.SetPosition(i, Vector3.Lerp(hookStart.position, lineEnd.position, delta) + offset);
             }
         }
 

@@ -81,7 +81,7 @@ namespace Barji.Player.Attachments
                     }   
                 }
 
-                if(input.grappling)
+                if(input.grappling && !isGrappling)
                     graphics.DrawGuide(activeHand.position, activeHand.position + (activeHand.forward * grappleRange), 1);
                 else
                     graphics.DrawGuide(activeHand.position, activeHand.position + (activeHand.forward * grappleRange), 0);

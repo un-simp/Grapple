@@ -5975,6 +5975,7 @@ MonoBehaviour:
   impactSmoothing: 0.2
   maximumOffset: -0.8
   sensitivity: {x: 100, y: 100}
+  VRPlayer: 0
 --- !u!114 &5179239499188365711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6010,6 +6011,7 @@ MonoBehaviour:
   wallNormal: {x: 0, y: 0, z: 0}
   speedOnStart: 0
   maxVelocityOnStart: 0
+  isVR: 0
 --- !u!114 &8925342572096370258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6043,6 +6045,27 @@ MonoBehaviour:
   mouseX: 0
   mouseY: 0
   jumping: 0
+  grappling: 0
+  stopGrapple: 0
+  squeeze: 0
+  switchLeft: 0
+  switchRight: 0
+  touchpad:
+    actionPath: 
+    needsReinit: 0
+  jump:
+    actionPath: 
+    needsReinit: 0
+  triggerRight:
+    actionPath: 
+    needsReinit: 0
+  triggerLeft:
+    actionPath: 
+    needsReinit: 0
+  squeezer:
+    actionPath: 
+    needsReinit: 0
+  isVR: 0
 --- !u!114 &5179239499188365709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6064,6 +6087,10 @@ MonoBehaviour:
   springiness: 5
   mass: 5
   sounds: {fileID: 1812736657}
+  input: {fileID: 0}
+  activeHand: {fileID: 0}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
 --- !u!114 &5179239499188365708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6086,7 +6113,7 @@ MonoBehaviour:
   spearHitParticlesMat: {fileID: 2100000, guid: 0f58eeb4668867d47a8eb8a5cf6244fe, type: 2}
   sway: {fileID: 3682457079257268792}
   spearMesh: {fileID: 543450653582979517}
-  hook: {fileID: 9201234263721058320}
+  spear: {fileID: 0}
   crosshair: {fileID: 5179239499418449747}
   resolution: 100
   graphicsDamper: 14
@@ -6129,6 +6156,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   speedlinesMat: {fileID: 2100000, guid: 101f8d2ffe00e0b41accd59d30398157, type: 2}
   speedlines: {fileID: 5145150504545641401}
+  rayGuide: {fileID: 0}
 --- !u!114 &1926907508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6697,8 +6725,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9201234263996999368}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.593, y: -0.78499913, z: -0.9970012}
+  m_LocalRotation: {x: 0.6228083, y: -0, z: -0, w: 0.78237456}
+  m_LocalPosition: {x: 0.5930004, y: -0.39499807, z: 0.7180004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9201234264599792533}
