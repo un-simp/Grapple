@@ -27,7 +27,7 @@ namespace Barji.UI
 
         public void ScaleDown()
         {
-            transform.DOScale(startState.localScale, time).SetEase(Ease.InCubic);
+            transform.DOScale(startState.localScale, time).SetEase(Ease.OutCubic);
         }
     }
 

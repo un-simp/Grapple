@@ -36,7 +36,7 @@ namespace Barji
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Finish"))
+            if (other.CompareTag("Finish") && isIncrementing)
             {
                 isIncrementing = false;
                 GameplayManager.singleton.LevelOver();

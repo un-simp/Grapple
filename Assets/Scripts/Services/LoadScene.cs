@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Barji.Services;
 
 namespace Barji
 {
@@ -9,6 +10,7 @@ namespace Barji
 
         public void LoadScenes()
         {
+            GameplayManager.singleton = null;
             SceneManager.LoadSceneAsync(name);
         }
     }

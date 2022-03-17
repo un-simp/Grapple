@@ -104,6 +104,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5378037882504187515}
+  - component: {fileID: 5559721815617340561}
   m_Layer: 0
   m_Name: Mushroom
   m_TagString: Untagged
@@ -118,7 +119,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4749450811169428673}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.1912837, y: 9.3, z: 51}
   m_LocalScale: {x: 3.149915, y: 3.149915, z: 3.149915}
   m_Children:
@@ -127,6 +128,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5559721815617340561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4749450811169428673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cb27676238043845bd68688970f5601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounceParticles: {fileID: 4949074421046680691, guid: 88d7df6396680a54893cf4b7bb8d3fc4, type: 3}
 --- !u!1 &9192183366457747344
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +231,7 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9192183366457747344}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1

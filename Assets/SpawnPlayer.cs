@@ -12,9 +12,9 @@ public class SpawnPlayer : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     void Start()
     {
-        if(OpenVR.IsHmdPresent())
+        /*if(OpenVR.IsHmdPresent())
             Instantiate(VRPlayer, spawnPoint.position, Quaternion.identity);
-        else
-            Instantiate(player, spawnPoint.position, Quaternion.identity);
+        else*/
+        Instantiate(player, spawnPoint.position, Quaternion.identity);
     }
 }

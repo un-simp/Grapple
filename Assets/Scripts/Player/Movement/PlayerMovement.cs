@@ -97,6 +97,9 @@ namespace Barji.Player.Movement
         {
             if(isVR)
                 orientation.eulerAngles = new Vector3(0, orientation.eulerAngles.y, orientation.eulerAngles.z);
+            
+            cam.fieldOfView = Mathf.Lerp(FOV, FOV * 1.25f, (currentVelocity - 10f) / absMaxVel);
+            overlayCam.fieldOfView = Mathf.Lerp(FOV, FOV * 1.25f, (currentVelocity - 10f) / absMaxVel);
         }
 
         private void FixedUpdate()
@@ -178,14 +181,13 @@ namespace Barji.Player.Movement
         {
             //On Ground
             maxVelocity = Mathf.Lerp(maxVelocity, maxVelocityOnStart, Time.deltaTime * 3);
-            HandleFOV(FOV);
+            //HandleFOV(FOV);
             Movement(1, 1);
         }
         
 
         private void AirbornMovement()
         {
-            HandleFOV(Mathf.Clamp((FOV + FOV / 3) * (currentVelocity / absMaxVel), FOV, FOV + FOV / 3));
             Movement(0.75f, 0.75f);
         }
 
@@ -317,7 +319,10 @@ namespace Barji.Player.Movement
         private void OnTriggerEnter(Collider other) 
         {
             if(other.gameObject.layer == LayerMask.NameToLayer("Bounce") && rb.velocity.y < 0)
-                rb.velocity = new Vector3(rb.velocity.x, -rb.velocity.y, rb.velocity.z);    
+            {
+                rb.velocity = new Vector3(rb.velocity.x, -rb.velocity.y, rb.velocity.z);  
+                other.transform.parent.GetComponent<BounceAnimation>().Bounce();
+            } 
         }
 
         private void OnCollisionEnter(Collision other)
