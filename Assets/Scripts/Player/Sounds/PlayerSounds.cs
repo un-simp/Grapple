@@ -24,6 +24,7 @@ namespace Barji.Player.Sounds
         [SerializeField] private AudioSource grappleAS;
         [SerializeField] private AudioClip grappleThrow;
         [SerializeField] private AudioClip grappleImpact;
+        [SerializeField] private AudioClip grappleStretch;
 
         [Header("Lunge")] [SerializeField] private AudioSource lungeAS;
         [SerializeField] private AudioClip lunge;
@@ -55,8 +56,16 @@ namespace Barji.Player.Sounds
 
         public void PlayGrappleThrow(Vector3 hitPoint)
         {
-            grappleAS.PlayOneShot(grappleThrow, 0.2f);
+            grappleAS.PlayOneShot(grappleThrow, 1f);
+            grappleAS.clip = grappleStretch;
+            grappleAS.volume = 0.05f;
+            grappleAS.Play();
             StartCoroutine(PlayGrappleHit(hitPoint));
+        }
+
+        public void StopGrapple()
+        {
+            grappleAS.Stop();
         }
 
         private IEnumerator PlayGrappleHit(Vector3 hitPoint)

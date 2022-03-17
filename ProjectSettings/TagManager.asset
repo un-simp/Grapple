@@ -23,9 +23,9 @@ TagManager:
   - Wallrunnable
   - Player
   - NonCollide
-  - 
-  - 
-  - 
+  - Water
+  - Bounce
+  - Start
   - 
   - 
   - 

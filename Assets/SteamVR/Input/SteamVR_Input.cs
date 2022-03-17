@@ -449,8 +449,12 @@ namespace Valve.VR
             SteamVR_Action action = GetBaseActionFromPath(path, caseSensitive);
             if (action != null)
             {
-                T actionData = (T)action.GetSourceMap();
-                return actionData;
+                try
+                {
+                    T actionData = (T)action.GetSourceMap();
+                    return actionData;
+                }
+                catch{}
             }
 
             return null;

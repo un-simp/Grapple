@@ -132,64 +132,6 @@
          "sources" : [
             {
                "inputs" : {
-                  "click" : {
-                     "output" : "/actions/default/in/interactui"
-                  }
-               },
-               "mode" : "button",
-               "path" : "/user/hand/left/input/trigger"
-            },
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/default/in/grabgrip"
-                  }
-               },
-               "mode" : "button",
-               "parameters" : {
-                  "click_activate_threshold" : "0.8",
-                  "click_deactivate_threshold" : "0.7"
-               },
-               "path" : "/user/hand/left/input/grip"
-            },
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/default/in/grabpinch"
-                  }
-               },
-               "mode" : "button",
-               "parameters" : {
-                  "click_activate_threshold" : "0.8",
-                  "click_deactivate_threshold" : "0.7",
-                  "force_input" : "value"
-               },
-               "path" : "/user/hand/left/input/trigger"
-            },
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/default/in/interactui"
-                  }
-               },
-               "mode" : "button",
-               "path" : "/user/hand/right/input/trigger"
-            },
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/default/in/grabpinch"
-                  }
-               },
-               "mode" : "button",
-               "parameters" : {
-                  "click_activate_threshold" : "0.8",
-                  "click_deactivate_threshold" : "0.7"
-               },
-               "path" : "/user/hand/right/input/trigger"
-            },
-            {
-               "inputs" : {
                   "east" : {
                      "output" : "/actions/default/in/snapturnright"
                   },
@@ -208,32 +150,10 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/default/in/grabgrip"
+                     "output" : "/actions/default/in/squeeze"
                   }
                },
                "mode" : "button",
-               "parameters" : {
-                  "click_activate_threshold" : "0.8",
-                  "click_deactivate_threshold" : "0.7"
-               },
-               "path" : "/user/hand/right/input/grip"
-            },
-            {
-               "inputs" : {
-                  "pull" : {
-                     "output" : "/actions/default/in/squeeze"
-                  }
-               },
-               "mode" : "trigger",
-               "path" : "/user/hand/left/input/grip"
-            },
-            {
-               "inputs" : {
-                  "pull" : {
-                     "output" : "/actions/default/in/squeeze"
-                  }
-               },
-               "mode" : "trigger",
                "path" : "/user/hand/right/input/grip"
             },
             {
@@ -244,6 +164,51 @@
                },
                "mode" : "joystick",
                "path" : "/user/hand/left/input/joystick"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/jump"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/a"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/squeeze"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/triggerright"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/switchhand"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/y"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/triggerleft"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
             }
          ]
       },

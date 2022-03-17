@@ -1,24 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR;
+using UnityEngine.XR.Management;
+using Valve.VR;
 
 public class XRManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        DisableXR();
-            
+        if(OpenVR.IsHmdPresent())
+            StartCoroutine(StartXR());    
+        else
+            StopXR();
     }
 
-    public void EnableXR()
+    IEnumerator StartXR()
     {
-        XRSettings.enabled = true;
+        yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+        if (XRGeneralSettings.Instance.Manager.activeLoader == null)
+        {
+            Debug.LogError("Initializing XR Failed. Check Editor or Player log for details.");
+        }
+        else
+        {
+            Debug.Log("Starting XR...");
+            XRGeneralSettings.Instance.Manager.StartSubsystems();
+            yield return null;
+        }
     }
-
-    public void DisableXR()
+    
+    void StopXR()
     {
-        XRSettings.enabled = false;
+        if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+        {
+            XRGeneralSettings.Instance.Manager.StopSubsystems();
+            Camera.main.ResetAspect();
+            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+        }
     }
 }

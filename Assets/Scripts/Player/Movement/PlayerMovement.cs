@@ -185,7 +185,7 @@ namespace Barji.Player.Movement
 
         private void AirbornMovement()
         {
-            HandleFOV(FOV * 1.1f);
+            HandleFOV(Mathf.Clamp((FOV + FOV / 3) * (currentVelocity / absMaxVel), FOV, FOV + FOV / 3));
             Movement(0.75f, 0.75f);
         }
 
@@ -313,6 +313,12 @@ namespace Barji.Player.Movement
         #endregion
         
         #region Collisions
+
+        private void OnTriggerEnter(Collider other) 
+        {
+            if(other.gameObject.layer == LayerMask.NameToLayer("Bounce") && rb.velocity.y < 0)
+                rb.velocity = new Vector3(rb.velocity.x, -rb.velocity.y, rb.velocity.z);    
+        }
 
         private void OnCollisionEnter(Collision other)
         {

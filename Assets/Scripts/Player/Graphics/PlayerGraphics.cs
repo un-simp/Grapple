@@ -41,5 +41,10 @@ namespace Barji.Player.Graphics
             var particle = Instantiate(impactParticles, _position, impactParticles.transform.rotation);
             particle.transform.forward = _normal;
         }
+
+        public void SpawnBounceParticles()
+        {
+            //TODO: implement this
+        }
     }
 }

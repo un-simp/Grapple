@@ -46,6 +46,12 @@ namespace Barji.Player.Attachments
         
         }
 
+        private void Start() 
+        {
+            if(movement.isVR)
+                rightHand.GetChild(rightHand.childCount-1).gameObject.SetActive(false);
+        }
+
         private void Update()
         {
             if (!canGrapple) return;
@@ -78,7 +84,7 @@ namespace Barji.Player.Attachments
                         activeHand.parent.parent = leftHand;
                         activeHand.parent.localPosition = Vector3.zero;
                         activeHand.parent.localEulerAngles = Vector3.zero;
-                    }   
+                    }  
                 }
 
                 if(input.grappling && !isGrappling)
@@ -166,6 +172,7 @@ namespace Barji.Player.Attachments
             if(GetComponent<SpringJoint>() && PlayerMovement.currentState != PlayerMovement.state.Grappling)
                 Destroy(GetComponent<SpringJoint>());
             graphics.StopGrapple();
+            sounds.StopGrapple();
         }
 
         public bool CanGrapple()

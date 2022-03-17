@@ -7,7 +7,6 @@ namespace Barji.UI.MenuStates
         public Transform mainUI;
         public Transform levelUI;
         public Transform optionsUI;
-        public Transform creditsUI;
 
         public float time;
         [HideInInspector] public float opacityTime => time * 0.8f;
